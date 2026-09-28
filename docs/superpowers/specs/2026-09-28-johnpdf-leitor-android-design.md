@@ -151,7 +151,7 @@ implementação.
 
 | Camada | Ferramenta | O que cobre |
 |---|---|---|
-| Unitários JVM | JUnit 5, kotlinx-coroutines-test, Turbine, `FakePdfEngine` | ViewModels (página atual, zoom, senha, erros), `RecentsRepository` (limite de 20, remoção da cópia), mapeamento da origem amigável, data amigável, busca por nome |
+| Unitários JVM | JUnit 4, kotlinx-coroutines-test, Turbine, `FakePdfEngine` | ViewModels (página atual, zoom, senha, erros), `RecentsRepository` (limite de 20, remoção da cópia), mapeamento da origem amigável, data amigável, busca por nome |
 | Robolectric | JUnit 4 + Robolectric | `ImportRepository` (cópia de `content://`), `SettingsRepository`, parsing do cursor do MediaStore |
 | Instrumentados | AndroidX Test no emulador | `MuPdfEngine` contra os PDFs de `androidTest/assets`: normal, com senha (`1234`), corrompido, 200 páginas, paisagem |
 | UI Compose | `createAndroidComposeRule` | Home (abas, lista vazia, remoção), leitor (botões Anterior/Próxima, indicador, diálogo de senha) |
