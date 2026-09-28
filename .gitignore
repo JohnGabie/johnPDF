@@ -10,3 +10,5 @@ captures/
 *.keystore
 *.jks
 .superpowers/
+keystore.properties
+.venv-tools/
