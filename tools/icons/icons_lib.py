@@ -143,3 +143,132 @@ def load_icons() -> list[Icon]:
         )
     return icons
 
+
+HEADER = '''/*
+ * Ícones derivados de Material Symbols (Rounded, weight 400, grade 0, optical size 24)
+ * de https://github.com/google/material-design-icons
+ *
+ * Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ARQUIVO GERADO — não editar à mão.
+ * Regenerar com: py tools/icons/generate_johnicons.py
+ * SVGs de origem: tools/icons/svg/ (commit upstream em tools/icons/UPSTREAM.txt)
+ */
+package com.johngabie.johnpdf.ui.icons
+
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.compose.ui.graphics.vector.group
+import androidx.compose.ui.unit.dp
+
+/**
+ * Constrói um Material Symbol 24dp a partir do atributo `d` do SVG.
+ *
+ * O viewBox dos Symbols é `0 -960 960 960` (origem embaixo, Y negativo). O
+ * [group] com `translationY = 960f` traz o desenho para o quadrante positivo
+ * sem mexer numa única coordenada do `d` — é o que mantém a string idêntica
+ * ao arquivo upstream.
+ *
+ * `name` vira `"JohnIcons.<Nome>"`: é como o ícone aparece no dump de
+ * semântica e nas mensagens de falha dos testes.
+ *
+ * A cor preta é um marcador. `Icon(...)` sempre aplica tint
+ * (`LocalContentColor` por padrão), então nenhum ícone chega à tela em preto fixo.
+ */
+private fun symbol(
+    name: String,
+    d: String,
+    autoMirror: Boolean = false,
+    fillType: PathFillType = PathFillType.NonZero,
+): ImageVector =
+    ImageVector.Builder(
+        name = "JohnIcons.$name",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 960f,
+        viewportHeight = 960f,
+        autoMirror = autoMirror,
+    ).apply {
+        group(translationY = 960f) {
+            addPath(
+                pathData = addPathNodes(d),
+                pathFillType = fillType,
+                fill = SolidColor(Color.Black),
+            )
+        }
+    }.build()
+
+/** Os ícones do johnPDF. Sempre usar via `Icon(JohnIcons.X, contentDescription = ...)`. */
+object JohnIcons {
+'''
+
+ALL_DOC = """
+    /**
+     * Todos os ícones, para os testes de sanidade de `JohnIconsTest`.
+     * Não usar em código de produção.
+     */
+"""
+
+
+def _val_line(icon: Icon) -> str:
+    args = [f'"{icon.kotlin}"', const_name(icon.kotlin)]
+    if icon.automirror:
+        args.append("autoMirror = true")
+    if icon.even_odd:
+        args.append("fillType = PathFillType.EvenOdd")
+    chamada = f"symbol({', '.join(args)})"
+    doc = f"    /** `{icon.upstream}`"
+    if icon.fill:
+        doc += " (fill 1)"
+    doc += f" — {svg_filename(icon)}. */\n"
+    return f"{doc}    val {icon.kotlin}: ImageVector by lazy {{ {chamada} }}\n"
+
+
+def _all_block(icons: list[Icon]) -> str:
+    linhas = ["    val All: List<ImageVector>", "        get() = listOf("]
+    atual = "           "
+    for icon in icons:
+        pedaco = f" {icon.kotlin},"
+        if len(atual) + len(pedaco) > 96:
+            linhas.append(atual)
+            atual = "           "
+        atual += pedaco
+    linhas.append(atual)
+    linhas.append("        )")
+    return "\n".join(linhas) + "\n"
+
+
+def render_kotlin(icons: list[Icon]) -> str:
+    """Monta o conteúdo inteiro de JohnIcons.kt. Determinístico, só LF."""
+    icons = sorted(icons, key=lambda i: i.kotlin)
+    partes = [HEADER]
+    partes.append("\n".join(_val_line(i).rstrip("\n") for i in icons))
+    partes.append("\n")
+    partes.append(ALL_DOC)
+    partes.append(_all_block(icons))
+    partes.append("}\n")
+    for icon in icons:
+        partes.append(
+            f"\n// Copiado byte a byte do atributo `d` de "
+            f"tools/icons/svg/{svg_filename(icon)} — não editar.\n"
+            f"private const val {const_name(icon.kotlin)} =\n"
+            f'    "{icon.d}"\n'
+        )
+    texto = "".join(partes)
+    assert "\r" not in texto
+    return texto

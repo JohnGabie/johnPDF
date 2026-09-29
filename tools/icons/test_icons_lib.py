@@ -147,5 +147,87 @@ class LoadIconsTest(unittest.TestCase):
         self.assertNotEqual(by_name["LibraryBooks"].d, by_name["LibraryBooksFilled"].d)
 
 
+class RenderKotlinTest(unittest.TestCase):
+    def render(self):
+        icons = [
+            icons_lib.Icon("arrow_back", "ArrowBack", False, True, d="M1-1Z"),
+            icons_lib.Icon("history", "History", False, False, d="M2-2Z"),
+            icons_lib.Icon("history", "HistoryFilled", True, False, d="M3-3Z"),
+            icons_lib.Icon("error", "Error", False, False, d="M4-4Z", even_odd=True),
+        ]
+        return icons_lib.render_kotlin(icons)
+
+    def test_tem_cabecalho_apache_e_marca_de_arquivo_gerado(self):
+        kt = self.render()
+        self.assertIn("Apache License, Version 2.0", kt)
+        self.assertIn("Copyright 2023 Google LLC", kt)
+        self.assertIn("ARQUIVO GERADO", kt)
+        self.assertIn("py tools/icons/generate_johnicons.py", kt)
+        self.assertIn("package com.johngabie.johnpdf.ui.icons", kt)
+
+    def test_usa_addpathnodes_e_o_group_do_viewbox_negativo(self):
+        kt = self.render()
+        self.assertIn("import androidx.compose.ui.graphics.vector.addPathNodes", kt)
+        self.assertIn("pathData = addPathNodes(d)", kt)
+        self.assertIn("group(translationY = 960f)", kt)
+        self.assertIn("viewportWidth = 960f", kt)
+        self.assertIn("viewportHeight = 960f", kt)
+        self.assertIn("defaultWidth = 24.dp", kt)
+        self.assertNotIn("moveTo(", kt)
+        self.assertNotIn("curveToRelative(", kt)
+
+    def test_emite_um_val_por_icone_com_nome_proprio(self):
+        kt = self.render()
+        self.assertIn(
+            'val ArrowBack: ImageVector by lazy { symbol("ArrowBack", D_ARROW_BACK, autoMirror = true) }',
+            kt,
+        )
+        self.assertIn(
+            'val History: ImageVector by lazy { symbol("History", D_HISTORY) }', kt
+        )
+        self.assertIn(
+            'val HistoryFilled: ImageVector by lazy { symbol("HistoryFilled", D_HISTORY_FILLED) }',
+            kt,
+        )
+
+    def test_evenodd_vira_pathfilltype(self):
+        kt = self.render()
+        self.assertIn(
+            'val Error: ImageVector by lazy { symbol("Error", D_ERROR, fillType = PathFillType.EvenOdd) }',
+            kt,
+        )
+
+    def test_copia_o_d_byte_a_byte(self):
+        kt = self.render()
+        self.assertIn('private const val D_ARROW_BACK =\n    "M1-1Z"', kt)
+        self.assertIn('private const val D_HISTORY_FILLED =\n    "M3-3Z"', kt)
+
+    def test_lista_all_em_ordem_alfabetica(self):
+        kt = self.render()
+        self.assertIn("val All: List<ImageVector>", kt)
+        # O bloco emitido é `get() = listOf(...)`; cortar no primeiro ")" pegaria
+        # o "()" de `get()`. Recortar a partir de "listOf(" é o que isola a lista.
+        bloco = (
+            kt.split("val All: List<ImageVector>", 1)[1]
+            .split("listOf(", 1)[1]
+            .split(")", 1)[0]
+        )
+        for nome in ("ArrowBack", "Error", "History", "HistoryFilled"):
+            self.assertIn(nome, bloco)
+
+    def test_saida_e_deterministica_e_so_tem_lf(self):
+        self.assertEqual(self.render(), self.render())
+        self.assertNotIn("\r", self.render())
+        self.assertTrue(self.render().endswith("\n"))
+
+
+class GeneratorEndToEndTest(unittest.TestCase):
+    def test_gera_os_22_vals_a_partir_dos_svgs_versionados(self):
+        kt = icons_lib.render_kotlin(icons_lib.load_icons())
+        self.assertEqual(22, kt.count(": ImageVector by lazy {"))
+        self.assertEqual(22, kt.count("private const val D_"))
+        self.assertEqual(1, kt.count("autoMirror = true"))
+
+
 if __name__ == "__main__":
     unittest.main()
