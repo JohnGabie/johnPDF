@@ -9,7 +9,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val MinTouchTarget = 64.dp
+// --- Espaçamento: escala de 4dp nomeada (spec D1 §4) ---
+val SpaceXs = 4.dp
+val SpaceS = 8.dp
+val SpaceM = 12.dp
+val SpaceL = 16.dp
+val SpaceXl = 24.dp
+val SpaceXxl = 32.dp
+val ScreenPadding = SpaceL
+val MinGap = SpaceS
+
+// --- Alvos de toque (spec D1 §3.1) ---
+val PrimaryTouchTarget = 56.dp
+val ListItemMinHeight = 72.dp
+val MaxActionWidth = 360.dp
+
+// --- Gap entre páginas do PDF (spec D1 §4) ---
+val PageGap = SpaceS
+val PageElevation = 1.dp
+
+@Deprecated("Sai na Task 10 do plano D1; use PrimaryTouchTarget (§3.1) ou os componentes de Buttons.kt.")
+internal val MinTouchTarget = 64.dp
+
+@Deprecated("Sai na Task 10 do plano D1; use MaterialTheme.colorScheme.surfaceContainerHigh.")
 val PageGapColor = Color(0xFFBDBDBD)
 
 private val Colors = lightColorScheme(

@@ -1,5 +1,6 @@
 package com.johngabie.johnpdf.ui.theme
 
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -28,5 +29,10 @@ class ThemeTest {
                 style.fontSize.value >= minSp,
             )
         }
+    }
+
+    @Test fun alvo_primario_acima_do_minimo_do_m3() {
+        assertTrue("PrimaryTouchTarget deve ser >= 48dp", PrimaryTouchTarget >= 48.dp)
+        assertTrue("ListItemMinHeight deve ser >= 72dp", ListItemMinHeight >= 72.dp)
     }
 }
