@@ -27,14 +27,17 @@ private val Colors = lightColorScheme(
 )
 
 private val Base = Typography()
-private val BigTypography = Typography(
+internal val BigTypography = Typography(
     headlineMedium = Base.headlineMedium.copy(fontSize = 30.sp, fontWeight = FontWeight.Bold),
     titleLarge = Base.titleLarge.copy(fontSize = 24.sp, fontWeight = FontWeight.SemiBold),
     titleMedium = Base.titleMedium.copy(fontSize = 22.sp, fontWeight = FontWeight.SemiBold),
+    titleSmall = Base.titleSmall.copy(fontSize = 20.sp, fontWeight = FontWeight.SemiBold),
     bodyLarge = Base.bodyLarge.copy(fontSize = 20.sp, lineHeight = 28.sp),
     bodyMedium = Base.bodyMedium.copy(fontSize = 20.sp, lineHeight = 28.sp),
+    bodySmall = Base.bodySmall.copy(fontSize = 20.sp, lineHeight = 28.sp),
     labelLarge = Base.labelLarge.copy(fontSize = 20.sp, fontWeight = FontWeight.SemiBold),
     labelMedium = Base.labelMedium.copy(fontSize = 20.sp),
+    labelSmall = Base.labelSmall.copy(fontSize = 20.sp),
 )
 
 @Composable
