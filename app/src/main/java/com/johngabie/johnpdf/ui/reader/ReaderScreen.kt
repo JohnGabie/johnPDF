@@ -316,16 +316,15 @@ private fun PageList(
 ) {
     val currentSingleTap by rememberUpdatedState(onSingleTap)
     val currentDoubleTap by rememberUpdatedState(onDoubleTap)
+    // Estado da pinça em andamento (liveZoom null = sem pinça). Fica FORA do BoxWithConstraints
+    // de propósito: o conteúdo dele é subcomposto na medida, e o `remember` de lá não é estável
+    // o bastante para uma corrotina de pointerInput de vida longa escrever nele.
+    val liveZoom = remember { mutableStateOf<Float?>(null) }
+    val pinchOrigin = remember { mutableStateOf(TransformOrigin.Center) }
+    LaunchedEffect(zoom) { liveZoom.value = null }
     BoxWithConstraints(Modifier.fillMaxSize().background(JohnTheme.colors.pageGap)) {
         val contentWidth = maxWidth * zoom
         val widthPx = with(LocalDensity.current) { contentWidth.roundToPx() }
-        // Zoom "ao vivo" da pinça em andamento (null = sem pinça). O preview é sempre
-        // liveZoom/zoom: quando o zoom confirmado chega pelo ViewModel a razão vira 1 na mesma
-        // recomposição em que o layout cresce, então não há quadro de salto nem de escala dupla.
-        var liveZoom by remember { mutableStateOf<Float?>(null) }
-        var pinchOrigin by remember { mutableStateOf(TransformOrigin.Center) }
-        val preview = (liveZoom ?: zoom) / zoom
-        LaunchedEffect(zoom) { liveZoom = null }
         Box(
             Modifier
                 .fillMaxSize()
@@ -334,17 +333,25 @@ private fun PageList(
                         onPinch = { s, centroid ->
                             // Amplia em volta dos dedos, não do centro da tela: senão o trecho
                             // que o usuário está segurando foge da mão durante o gesto.
-                            pinchOrigin = TransformOrigin(
+                            pinchOrigin.value = TransformOrigin(
                                 if (size.width > 0) (centroid.x / size.width).coerceIn(0f, 1f) else 0.5f,
                                 if (size.height > 0) (centroid.y / size.height).coerceIn(0f, 1f) else 0.5f,
                             )
-                            liveZoom = (zoom * s).coerceIn(ReaderViewModel.MIN_ZOOM, ReaderViewModel.MAX_ZOOM)
+                            liveZoom.value = (zoom * s).coerceIn(ReaderViewModel.MIN_ZOOM, ReaderViewModel.MAX_ZOOM)
                         },
                         onPinchEnd = { s -> onZoomChange(zoom * s) },
                     )
                 }
                 .pointerInput(Unit) { detectTapGestures(onTap = { currentSingleTap() }, onDoubleTap = { currentDoubleTap() }) }
-                .graphicsLayer { scaleX = preview; scaleY = preview; transformOrigin = pinchOrigin }
+                // Lido DENTRO do bloco de propósito: assim a escala invalida a camada
+                // diretamente, sem depender de recomposição — é o que faz o preview
+                // acompanhar os dedos quadro a quadro durante o gesto.
+                .graphicsLayer {
+                    val preview = (liveZoom.value ?: zoom) / zoom
+                    scaleX = preview
+                    scaleY = preview
+                    transformOrigin = pinchOrigin.value
+                }
                 .horizontalScroll(rememberScrollState(), enabled = zoom > 1f),
         ) {
             LazyColumn(
