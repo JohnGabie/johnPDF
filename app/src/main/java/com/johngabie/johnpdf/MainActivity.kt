@@ -26,12 +26,20 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // statusBarStyle/navigationBarStyle "light" força ícones escuros sobre fundo
-        // transparente, independente do modo escuro do sistema (senão os ícones da
-        // barra de status somem no dark mode).
+        // auto(): ícones escuros no claro e claros no escuro, acompanhando o sistema.
+        // Era light() enquanto não existia darkColorScheme (conserto F6); agora que
+        // existe, light() seria o bug — ícones escuros sobre surface #0F1417 somem.
+        // Os dois argumentos são os scrims usados quando falta contraste; TRANSPARENT
+        // nos dois mantém o edge-to-edge real.
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
+            statusBarStyle = SystemBarStyle.auto(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT,
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT,
+            ),
         )
         // Só na primeira criação: após rotação o intent é o mesmo e não deve reimportar.
         if (savedInstanceState == null) handleViewIntent(intent)

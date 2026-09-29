@@ -16,7 +16,7 @@
         android:label="johnPDF"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:theme="@style/Theme.JohnPdf">
 
         <activity
             android:name=".MainActivity"

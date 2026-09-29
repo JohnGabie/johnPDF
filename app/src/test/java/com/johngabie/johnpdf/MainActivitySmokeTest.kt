@@ -8,10 +8,12 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowEnvironment
 
 private const val OP_MANAGE_EXTERNAL_STORAGE = 92
@@ -44,5 +46,17 @@ class MainActivitySmokeTest {
         rule.onNodeWithText("Os PDFs que você abrir vão aparecer aqui.").assertIsDisplayed()
         rule.onNodeWithText("Todos os PDFs").performClick()
         rule.onNodeWithText("Permitir acesso").assertIsDisplayed()
+    }
+
+    /**
+     * Arranque a frio em modo escuro: a Activity sobe e o windowBackground do tema
+     * de plataforma é a surface escura — é ele que evita o clarão branco antes de o
+     * Compose desenhar.
+     */
+    @Test
+    @Config(qualifiers = "+night")
+    fun activity_starts_in_night_mode() {
+        rule.onNodeWithText("johnPDF").assertIsDisplayed()
+        assertEquals(0xFF0F1417.toInt(), rule.activity.getColor(R.color.window_background))
     }
 }
