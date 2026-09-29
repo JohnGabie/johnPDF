@@ -105,6 +105,10 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 private const val A4_ASPECT = 595f / 842f
+private const val AXIS_LOCK_THRESHOLD = 20f  // pixels para detectar direção
+private const val AXIS_LOCK_RATIO = 1.8f     // razão para travar eixo
+
+private enum class ScrollAxis { Vertical, Horizontal, Undecided }
 
 @Composable
 fun ReaderScreen(viewModel: ReaderViewModel, onBack: () -> Unit) {
@@ -318,19 +322,51 @@ private fun PageList(
     BoxWithConstraints(Modifier.fillMaxSize().background(JohnTheme.colors.pageGap)) {
         val contentWidth = maxWidth * zoom
         val widthPx = with(LocalDensity.current) { contentWidth.roundToPx() }
-        var pinch by remember { mutableFloatStateOf(1f) }
+        val horizontalScrollState = rememberScrollState()
+        var scrollAxis by remember { mutableStateOf(ScrollAxis.Undecided) }
+        var anchorX by remember { mutableFloatStateOf(0f) }
+        var anchorY by remember { mutableFloatStateOf(0f) }
+        var initialZoom by remember { mutableFloatStateOf(zoom) }
+
         Box(
             Modifier
                 .fillMaxSize()
                 .pointerInput(zoom) {
                     detectPinch(
-                        onPinch = { s -> pinch = (zoom * s).coerceIn(ReaderViewModel.MIN_ZOOM, ReaderViewModel.MAX_ZOOM) / zoom },
-                        onPinchEnd = { s -> pinch = 1f; onZoomChange(zoom * s) },
+                        onPinchStart = { x, y ->
+                            initialZoom = zoom
+                            anchorX = x
+                            anchorY = y
+                        },
+                        onPinch = { s -> onZoomChange((initialZoom * s).coerceIn(ReaderViewModel.MIN_ZOOM, ReaderViewModel.MAX_ZOOM)) },
                     )
                 }
                 .pointerInput(Unit) { detectTapGestures(onTap = { currentSingleTap() }, onDoubleTap = { currentDoubleTap() }) }
-                .graphicsLayer { scaleX = pinch; scaleY = pinch }
-                .horizontalScroll(rememberScrollState(), enabled = zoom > 1f),
+                .pointerInput(Unit) {
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false)
+                        scrollAxis = ScrollAxis.Undecided
+                        var totalDeltaX = 0f
+                        var totalDeltaY = 0f
+                        do {
+                            val event = awaitPointerEvent()
+                            event.changes.forEach { change ->
+                                totalDeltaX += kotlin.math.abs(change.position.x - change.previousPosition.x)
+                                totalDeltaY += kotlin.math.abs(change.position.y - change.previousPosition.y)
+                            }
+
+                            if (scrollAxis == ScrollAxis.Undecided && totalDeltaX + totalDeltaY > AXIS_LOCK_THRESHOLD) {
+                                scrollAxis = when {
+                                    totalDeltaX > totalDeltaY * AXIS_LOCK_RATIO -> ScrollAxis.Horizontal
+                                    totalDeltaY > totalDeltaX * AXIS_LOCK_RATIO -> ScrollAxis.Vertical
+                                    else -> ScrollAxis.Undecided
+                                }
+                            }
+                        } while (event.changes.any { it.pressed })
+                        scrollAxis = ScrollAxis.Undecided
+                    }
+                }
+                .horizontalScroll(horizontalScrollState, enabled = zoom > 1f && scrollAxis != ScrollAxis.Vertical),
         ) {
             LazyColumn(
                 state = listState,
@@ -383,22 +419,35 @@ private fun PageList(
     }
 }
 
-/** Pinça com dois dedos, interceptada na passagem Initial para não brigar com a rolagem da lista. */
-private suspend fun PointerInputScope.detectPinch(onPinch: (Float) -> Unit, onPinchEnd: (Float) -> Unit) {
+/** Pinça com dois dedos com anchor point. Detecta início e calcula scale ao vivo. */
+private suspend fun PointerInputScope.detectPinch(
+    onPinchStart: (Float, Float) -> Unit,
+    onPinch: (Float) -> Unit,
+) {
     awaitEachGesture {
         awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
         var scale = 1f
         var pinching = false
+
         do {
             val event = awaitPointerEvent(PointerEventPass.Initial)
-            if (event.changes.count { it.pressed } >= 2) {
-                pinching = true
+            val pointerCount = event.changes.count { it.pressed }
+
+            if (pointerCount >= 2) {
+                if (!pinching) {
+                    // Primeiro frame com 2+ dedos: capture anchor point
+                    val pointers = event.changes.filter { it.pressed }
+                    val midX = (pointers[0].position.x + pointers[1].position.x) / 2
+                    val midY = (pointers[0].position.y + pointers[1].position.y) / 2
+                    onPinchStart(midX, midY)
+                    pinching = true
+                }
+
                 scale *= event.calculateZoom()
                 onPinch(scale)
                 event.changes.forEach { it.consume() }
             }
         } while (event.changes.any { it.pressed })
-        if (pinching) onPinchEnd(scale)
     }
 }
 
