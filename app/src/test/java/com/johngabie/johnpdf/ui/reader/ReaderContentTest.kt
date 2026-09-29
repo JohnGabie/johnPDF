@@ -82,7 +82,7 @@ class ReaderContentTest {
 
     @Test fun needs_password_shows_dialog() {
         show(ReaderUiState("doc.pdf", ReaderStatus.NeedsPassword(wrongAttempt = false)))
-        rule.onNodeWithText("Este PDF tem senha").assertIsDisplayed()
+        rule.onNodeWithText("PDF protegido").assertIsDisplayed()
     }
 
     @Test fun failed_shows_error_and_ok_goes_back() {
