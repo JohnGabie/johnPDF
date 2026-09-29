@@ -2,4 +2,4 @@ repo:   https://github.com/google/material-design-icons
 commit: bd8cb85bd4bad964fe6918f79665bb40c3a8efef
 estilo: materialsymbolsrounded, weight 400, grade 0, optical size 24
 fonte:  raw.githubusercontent.com (primária)
-arquivos: 22 SVG + LICENSE
+arquivos: 25 SVG + LICENSE

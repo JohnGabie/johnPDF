@@ -71,8 +71,12 @@ private fun symbol(
 object JohnIcons {
     /** `arrow_back` — arrow_back_24px.svg. */
     val ArrowBack: ImageVector by lazy { symbol("ArrowBack", D_ARROW_BACK, autoMirror = true) }
+    /** `brightness_auto` — brightness_auto_24px.svg. */
+    val BrightnessAuto: ImageVector by lazy { symbol("BrightnessAuto", D_BRIGHTNESS_AUTO) }
     /** `close` — close_24px.svg. */
     val Close: ImageVector by lazy { symbol("Close", D_CLOSE) }
+    /** `dark_mode` — dark_mode_24px.svg. */
+    val DarkMode: ImageVector by lazy { symbol("DarkMode", D_DARK_MODE) }
     /** `delete` — delete_24px.svg. */
     val Delete: ImageVector by lazy { symbol("Delete", D_DELETE) }
     /** `dialpad` — dialpad_24px.svg. */
@@ -93,6 +97,8 @@ object JohnIcons {
     val LibraryBooks: ImageVector by lazy { symbol("LibraryBooks", D_LIBRARY_BOOKS) }
     /** `library_books` (fill 1) — library_books_fill1_24px.svg. */
     val LibraryBooksFilled: ImageVector by lazy { symbol("LibraryBooksFilled", D_LIBRARY_BOOKS_FILLED) }
+    /** `light_mode` — light_mode_24px.svg. */
+    val LightMode: ImageVector by lazy { symbol("LightMode", D_LIGHT_MODE) }
     /** `lock` — lock_24px.svg. */
     val Lock: ImageVector by lazy { symbol("Lock", D_LOCK) }
     /** `picture_as_pdf` — picture_as_pdf_24px.svg. */
@@ -120,10 +126,10 @@ object JohnIcons {
      */
     val All: List<ImageVector>
         get() = listOf(
-            ArrowBack, Close, Delete, Dialpad, Error, Folder, FolderOpen, Keyboard,
-            KeyboardArrowDown, KeyboardArrowUp, LibraryBooks, LibraryBooksFilled, Lock,
-            PictureAsPdf, Schedule, ScheduleFilled, ScreenLockRotation, ScreenRotation, Search,
-            SearchOff, Visibility, VisibilityOff,
+            ArrowBack, BrightnessAuto, Close, DarkMode, Delete, Dialpad, Error, Folder,
+            FolderOpen, Keyboard, KeyboardArrowDown, KeyboardArrowUp, LibraryBooks,
+            LibraryBooksFilled, LightMode, Lock, PictureAsPdf, Schedule, ScheduleFilled,
+            ScreenLockRotation, ScreenRotation, Search, SearchOff, Visibility, VisibilityOff,
         )
 }
 
@@ -131,9 +137,17 @@ object JohnIcons {
 private const val D_ARROW_BACK =
     "m313-440 196 196q12 12 11.5 28T508-188q-12 11-28 11.5T452-188L188-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l264-264q11-11 27.5-11t28.5 11q12 12 12 28.5T508-715L313-520h447q17 0 28.5 11.5T800-480q0 17-11.5 28.5T760-440H313Z"
 
+// Copiado byte a byte do atributo `d` de tools/icons/svg/brightness_auto_24px.svg — não editar.
+private const val D_BRIGHTNESS_AUTO =
+    "M408-412h146l25 73q3 8 10.5 13.5T606-320q15 0 23.5-12.5T633-359L519-661q-3-9-11-14t-17-5h-22q-9 0-17 5t-11 14L327-360q-5 14 3.5 27t24.5 13q10 0 17.5-5.5T383-340l25-72Zm18-52 52-150h4l52 150H426Zm-80 304H240q-33 0-56.5-23.5T160-240v-106l-77-78q-11-12-17-26.5T60-480q0-15 6-29.5T83-536l77-78v-106q0-33 23.5-56.5T240-800h106l78-77q12-11 26.5-17t29.5-6q15 0 29.5 6t26.5 17l78 77h106q33 0 56.5 23.5T800-720v106l77 78q11 12 17 26.5t6 29.5q0 15-6 29.5T877-424l-77 78v106q0 33-23.5 56.5T720-160H614l-78 77q-12 11-26.5 17T480-60q-15 0-29.5-6T424-83l-78-77Zm34-80 100 100 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140Zm100-240Z"
+
 // Copiado byte a byte do atributo `d` de tools/icons/svg/close_24px.svg — não editar.
 private const val D_CLOSE =
     "M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"
+
+// Copiado byte a byte do atributo `d` de tools/icons/svg/dark_mode_24px.svg — não editar.
+private const val D_DARK_MODE =
+    "M480-120q-151 0-255.5-104.5T120-480q0-138 90-239.5T440-838q13-2 23 3.5t16 14.5q6 9 6.5 21t-7.5 23q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q11-7 22.5-6.5T819-479q10 5 15.5 15t3.5 24q-14 138-117.5 229T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"
 
 // Copiado byte a byte do atributo `d` de tools/icons/svg/delete_24px.svg — não editar.
 private const val D_DELETE =
@@ -174,6 +188,10 @@ private const val D_LIBRARY_BOOKS =
 // Copiado byte a byte do atributo `d` de tools/icons/svg/library_books_fill1_24px.svg — não editar.
 private const val D_LIBRARY_BOOKS_FILLED =
     "M440-400h80q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480h-80q-17 0-28.5 11.5T400-440q0 17 11.5 28.5T440-400Zm0-120h240q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H440q-17 0-28.5 11.5T400-560q0 17 11.5 28.5T440-520Zm0-120h240q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H440q-17 0-28.5 11.5T400-680q0 17 11.5 28.5T440-640ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320ZM160-80q-33 0-56.5-23.5T80-160v-520q0-17 11.5-28.5T120-720q17 0 28.5 11.5T160-680v520h520q17 0 28.5 11.5T720-120q0 17-11.5 28.5T680-80H160Z"
+
+// Copiado byte a byte do atributo `d` de tools/icons/svg/light_mode_24px.svg — não editar.
+private const val D_LIGHT_MODE =
+    "M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM80-440q-17 0-28.5-11.5T40-480q0-17 11.5-28.5T80-520h80q17 0 28.5 11.5T200-480q0 17-11.5 28.5T160-440H80Zm720 0q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520h80q17 0 28.5 11.5T920-480q0 17-11.5 28.5T880-440h-80ZM480-760q-17 0-28.5-11.5T440-800v-80q0-17 11.5-28.5T480-920q17 0 28.5 11.5T520-880v80q0 17-11.5 28.5T480-760Zm0 720q-17 0-28.5-11.5T440-80v-80q0-17 11.5-28.5T480-200q17 0 28.5 11.5T520-160v80q0 17-11.5 28.5T480-40ZM226-678l-43-42q-12-11-11.5-28t11.5-29q12-12 29-12t28 12l42 43q11 12 11 28t-11 28q-11 12-27.5 11.5T226-678Zm494 495-42-43q-11-12-11-28.5t11-27.5q11-12 27.5-11.5T734-282l43 42q12 11 11.5 28T777-183q-12 12-29 12t-28-12Zm-42-495q-12-11-11.5-27.5T678-734l42-43q11-12 28-11.5t29 11.5q12 12 12 29t-12 28l-43 42q-12 11-28 11t-28-11ZM183-183q-12-12-12-29t12-28l43-42q12-11 28.5-11t27.5 11q12 11 11.5 27.5T282-226l-42 43q-11 12-28 11.5T183-183Zm297-297Z"
 
 // Copiado byte a byte do atributo `d` de tools/icons/svg/lock_24px.svg — não editar.
 private const val D_LOCK =

@@ -22,19 +22,20 @@ class JohnIconsTest {
      * verdade. Ver o comentário em tools/icons/icons.txt.
      */
     private val nomesEsperados = listOf(
-        "ArrowBack", "Close", "Delete", "Dialpad", "Error", "Folder", "FolderOpen",
+        "ArrowBack", "BrightnessAuto", "Close", "DarkMode", "Delete", "Dialpad", "Error",
+        "Folder", "FolderOpen",
         "Keyboard", "KeyboardArrowDown", "KeyboardArrowUp",
-        "LibraryBooks", "LibraryBooksFilled", "Lock", "PictureAsPdf",
+        "LibraryBooks", "LibraryBooksFilled", "LightMode", "Lock", "PictureAsPdf",
         "Schedule", "ScheduleFilled",
         "ScreenLockRotation", "ScreenRotation", "Search", "SearchOff",
         "Visibility", "VisibilityOff",
     )
 
     @Test fun inventario_completo() {
-        assertEquals(22, nomesEsperados.size)
+        assertEquals(25, nomesEsperados.size)
         assertEquals(
             "JohnIcons.All não bate com o inventário; alguém criou um val e esqueceu de All",
-            22,
+            25,
             JohnIcons.All.size,
         )
     }

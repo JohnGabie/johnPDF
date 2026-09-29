@@ -5,7 +5,9 @@
 # Ver docs/superpowers/specs/2026-09-29-icones-vendorizados-spec.md §2
 
 arrow_back            ArrowBack            automirror
+brightness_auto       BrightnessAuto
 close                 Close
+dark_mode             DarkMode
 delete                Delete
 dialpad               Dialpad
 error                 Error
@@ -16,6 +18,7 @@ keyboard_arrow_down   KeyboardArrowDown
 keyboard_arrow_up     KeyboardArrowUp
 library_books         LibraryBooks
 library_books         LibraryBooksFilled   fill
+light_mode            LightMode
 lock                  Lock
 picture_as_pdf        PictureAsPdf
 # `history` não entra: upstream publica history_fill1_24px.svg idêntico ao
