@@ -101,6 +101,7 @@ import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
 import com.johngabie.johnpdf.ui.theme.SpaceL
 import com.johngabie.johnpdf.ui.theme.SpaceS
 import com.johngabie.johnpdf.ui.theme.readableIconButtonColors
+import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -321,7 +322,20 @@ private fun PageList(
     // o bastante para uma corrotina de pointerInput de vida longa escrever nele.
     val liveZoom = remember { mutableStateOf<Float?>(null) }
     val pinchOrigin = remember { mutableStateOf(TransformOrigin.Center) }
-    LaunchedEffect(zoom) { liveZoom.value = null }
+    val pinchCentroid = remember { mutableStateOf(Offset.Zero) }
+    val hScroll = rememberScrollState()
+    // Âncora pendente: o preview amplia em volta dos dedos, mas o zoom confirmado refaz o
+    // layout com os offsets de rolagem antigos. Sem reposicionar as duas rolagens, a página
+    // salta para um lugar arbitrário ao soltar a pinça.
+    val anchor = remember { mutableStateOf<PinchAnchor?>(null) }
+    LaunchedEffect(zoom) {
+        liveZoom.value = null
+        anchor.value?.let { a ->
+            anchor.value = null
+            hScroll.scrollTo(((a.hx + a.centroid.x) * a.factor - a.centroid.x).roundToInt())
+            listState.scrollToItem(a.index, ((a.centroid.y - a.itemOffset) * a.factor - a.centroid.y).roundToInt())
+        }
+    }
     BoxWithConstraints(Modifier.fillMaxSize().background(JohnTheme.colors.pageGap)) {
         val contentWidth = maxWidth * zoom
         val widthPx = with(LocalDensity.current) { contentWidth.roundToPx() }
@@ -337,9 +351,28 @@ private fun PageList(
                                 if (size.width > 0) (centroid.x / size.width).coerceIn(0f, 1f) else 0.5f,
                                 if (size.height > 0) (centroid.y / size.height).coerceIn(0f, 1f) else 0.5f,
                             )
+                            pinchCentroid.value = centroid
                             liveZoom.value = (zoom * s).coerceIn(ReaderViewModel.MIN_ZOOM, ReaderViewModel.MAX_ZOOM)
                         },
-                        onPinchEnd = { s -> onZoomChange(zoom * s) },
+                        onPinchEnd = { s ->
+                            val target = (zoom * s).coerceIn(ReaderViewModel.MIN_ZOOM, ReaderViewModel.MAX_ZOOM)
+                            val c = pinchCentroid.value
+                            // O item sob os dedos é o que tem que ficar parado; guardamos a
+                            // posição dele ANTES do relayout para reancorar depois.
+                            val visible = listState.layoutInfo.visibleItemsInfo
+                            val hit = visible.firstOrNull { c.y >= it.offset && c.y < it.offset + it.size }
+                                ?: visible.firstOrNull()
+                            if (hit != null && target != zoom) {
+                                anchor.value = PinchAnchor(
+                                    factor = target / zoom,
+                                    centroid = c,
+                                    hx = hScroll.value,
+                                    index = hit.index,
+                                    itemOffset = hit.offset,
+                                )
+                            }
+                            onZoomChange(target)
+                        },
                     )
                 }
                 .pointerInput(Unit) { detectTapGestures(onTap = { currentSingleTap() }, onDoubleTap = { currentDoubleTap() }) }
@@ -352,7 +385,7 @@ private fun PageList(
                     scaleY = preview
                     transformOrigin = pinchOrigin.value
                 }
-                .horizontalScroll(rememberScrollState(), enabled = zoom > 1f),
+                .horizontalScroll(hScroll, enabled = zoom > 1f),
         ) {
             LazyColumn(
                 state = listState,
@@ -404,6 +437,18 @@ private fun PageList(
         }
     }
 }
+
+/**
+ * Onde a página estava quando a pinça terminou, para reancorar depois do relayout.
+ * [itemOffset] é o topo do item [index] em relação ao topo da viewport (pode ser negativo).
+ */
+private data class PinchAnchor(
+    val factor: Float,
+    val centroid: Offset,
+    val hx: Int,
+    val index: Int,
+    val itemOffset: Int,
+)
 
 /**
  * Pinça com dois dedos, interceptada na passagem Initial para não brigar com a rolagem da lista.
