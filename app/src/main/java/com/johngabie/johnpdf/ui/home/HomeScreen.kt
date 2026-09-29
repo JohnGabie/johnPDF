@@ -29,21 +29,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -54,12 +60,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.johngabie.johnpdf.data.PdfFile
@@ -71,7 +79,9 @@ import com.johngabie.johnpdf.ui.common.ErrorDialog
 import com.johngabie.johnpdf.ui.common.PrimaryButton
 import com.johngabie.johnpdf.ui.common.SecondaryButton
 import com.johngabie.johnpdf.ui.icons.JohnIcons
+import com.johngabie.johnpdf.ui.theme.ListItemMinHeight
 import com.johngabie.johnpdf.ui.theme.MaxActionWidth
+import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
 import com.johngabie.johnpdf.ui.theme.SpaceL
 import com.johngabie.johnpdf.ui.theme.SpaceS
 import com.johngabie.johnpdf.ui.theme.SpaceXl
@@ -153,10 +163,16 @@ fun HomeContent(
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {
             when (state.tab) {
-                HomeTab.RECENTS -> RecentsTab(state.recents, nowMillis, onOpenRecent, onLongPress = { pendingRemoval = it })
+                HomeTab.RECENTS -> RecentsTab(
+                    items = state.recents,
+                    nowMillis = nowMillis,
+                    onOpen = onOpenRecent,
+                    onLongPress = { pendingRemoval = it },
+                    onOpenPicker = onOpenPicker,
+                )
                 HomeTab.ALL ->
                     if (!state.hasFilesAccess) PermissionContent(onRequestPermission)
-                    else AllPdfsTab(state.filteredPdfs, state.query, state.loadingAll, nowMillis, onQueryChange, onOpenPdf)
+                    else AllPdfsTab(state.filteredPdfs, state.query, state.loadingAll, nowMillis, onQueryChange, onOpenPdf, onOpenPicker)
             }
             if (state.busy) CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
@@ -241,14 +257,28 @@ private fun HomeBottomBar(tab: HomeTab, onSelectTab: (HomeTab) -> Unit) {
 }
 
 @Composable
-private fun RecentsTab(items: List<RecentItem>, nowMillis: Long, onOpen: (RecentItem) -> Unit, onLongPress: (RecentItem) -> Unit) {
+private fun RecentsTab(
+    items: List<RecentItem>,
+    nowMillis: Long,
+    onOpen: (RecentItem) -> Unit,
+    onLongPress: (RecentItem) -> Unit,
+    onOpenPicker: () -> Unit,
+) {
     if (items.isEmpty()) {
-        CenteredMessage("Os PDFs que você abrir vão aparecer aqui.")
+        EmptyState(
+            icon = JohnIcons.Schedule,
+            title = "Nenhum PDF aberto ainda",
+            message = "Os PDFs que você abrir vão aparecer aqui.",
+            actionLabel = "Abrir PDF",
+            onAction = onOpenPicker,
+        )
         return
     }
-    LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items(items, key = { it.path }) { item ->
-            PdfCard(
+    // Sem contentPadding inferior reservando espaço de FAB — a Home não tem FAB (spec §1.1a).
+    LazyColumn(contentPadding = PaddingValues(vertical = SpaceS)) {
+        itemsIndexed(items, key = { _, item -> item.path }) { index, item ->
+            if (index > 0) ListDivider()
+            PdfListItem(
                 name = item.name,
                 subtitle = "${item.origin.label} · ${friendlyDate(item.openedAt, nowMillis)}",
                 onClick = { onOpen(item) },
@@ -266,25 +296,30 @@ private fun AllPdfsTab(
     nowMillis: Long,
     onQueryChange: (String) -> Unit,
     onOpen: (PdfFile) -> Unit,
+    onOpenPicker: () -> Unit,
 ) {
     Column(Modifier.fillMaxSize()) {
-        OutlinedTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            placeholder = { Text("🔍 Buscar pelo nome…", style = MaterialTheme.typography.bodyLarge) },
-            singleLine = true,
-            textStyle = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.fillMaxWidth().padding(16.dp).heightIn(min = 64.dp),
-        )
+        SearchField(query, onQueryChange)
         when {
             loading && pdfs.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-            pdfs.isEmpty() -> CenteredMessage(if (query.isBlank()) "Nenhum PDF encontrado no celular." else "Nenhum PDF com esse nome.")
-            else -> LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(pdfs, key = { it.path }) { pdf ->
-                    PdfCard(
+            pdfs.isEmpty() ->
+                // Busca sem resultado não oferece ação: o caminho de saída é apagar a busca (spec §5.3).
+                if (query.isBlank()) EmptyState(
+                    icon = JohnIcons.FolderOpen,
+                    title = "Nenhum PDF no celular",
+                    message = "Nenhum PDF encontrado no celular.",
+                    actionLabel = "Abrir PDF",
+                    onAction = onOpenPicker,
+                ) else EmptyState(
+                    icon = JohnIcons.SearchOff,
+                    title = "Nada encontrado",
+                    message = "Nenhum PDF com esse nome.",
+                )
+            else -> LazyColumn(contentPadding = PaddingValues(vertical = SpaceS)) {
+                itemsIndexed(pdfs, key = { _, pdf -> pdf.path }) { index, pdf ->
+                    if (index > 0) ListDivider()
+                    // Sem onLongClick: toque longo só em Recentes (spec §5.2).
+                    PdfListItem(
                         name = pdf.name,
                         subtitle = "${pdf.origin.label} · ${friendlyDate(pdf.modifiedAt, nowMillis)}",
                         onClick = { onOpen(pdf) },
@@ -332,30 +367,119 @@ private fun PermissionContent(onRequestPermission: () -> Unit) {
     }
 }
 
+/** Busca em pílula: `TextField` sem sublinhado, com lupa à esquerda e "x" só quando há texto. */
 @Composable
-private fun CenteredMessage(text: String) {
-    Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-        Text(text, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun PdfCard(name: String, subtitle: String, onClick: () -> Unit, onLongClick: (() -> Unit)? = null) {
-    Surface(
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 2.dp,
+private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = { Text("Buscar PDFs", style = MaterialTheme.typography.bodyLarge) },
+        leadingIcon = { Icon(JohnIcons.Search, contentDescription = null) },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }, modifier = Modifier.size(48.dp)) {
+                    Icon(JohnIcons.Close, contentDescription = "Limpar busca")
+                }
+            }
+        },
+        singleLine = true,
+        textStyle = MaterialTheme.typography.bodyLarge,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        shape = RoundedCornerShape(28.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+        ),
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 80.dp)
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
+            .padding(horizontal = SpaceL, vertical = SpaceS)
+            .heightIn(min = PrimaryTouchTarget),
+    )
+}
+
+/** `actionLabel`/`onAction` são opcionais: busca sem resultado não oferece saída falsa (spec §5.3). */
+@Composable
+private fun EmptyState(
+    icon: ImageVector,
+    title: String,
+    message: String,
+    actionLabel: String? = null,
+    onAction: (() -> Unit)? = null,
+) {
+    Column(
+        Modifier.fillMaxSize().padding(SpaceXl),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("📄", fontSize = 32.sp, modifier = Modifier.padding(end = 16.dp))
-            Column {
-                Text(name, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                Text(subtitle, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(48.dp),
+        )
+        Spacer(Modifier.height(SpaceL))
+        Text(title, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+        Spacer(Modifier.height(SpaceS))
+        Text(
+            message,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.widthIn(max = MaxActionWidth),
+        )
+        if (actionLabel != null && onAction != null) {
+            Spacer(Modifier.height(SpaceL))
+            TextButton(onClick = onAction, modifier = Modifier.testTag("empty_state_action")) {
+                Text(actionLabel, style = MaterialTheme.typography.labelLarge)
             }
         }
     }
+}
+
+/** Divisor recuado até onde o texto começa — alinha com o ícone de 40dp + folga do `ListItem`. */
+@Composable
+private fun ListDivider() = HorizontalDivider(
+    Modifier.padding(start = ListItemMinHeight),
+    color = MaterialTheme.colorScheme.outlineVariant,
+)
+
+/**
+ * Linha de lista de 72dp inteira clicável. `errorContainer`/`onErrorContainer` é o "vermelho
+ * suave de PDF" da spec §5.2 — um papel que já existe em claro e escuro, sem cor solta no código.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun PdfListItem(name: String, subtitle: String, onClick: () -> Unit, onLongClick: (() -> Unit)? = null) {
+    ListItem(
+        headlineContent = {
+            Text(name, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        },
+        supportingContent = {
+            Text(subtitle, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        },
+        leadingContent = {
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.errorContainer),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    JohnIcons.PictureAsPdf,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onErrorContainer,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = ListItemMinHeight)
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
+    )
 }

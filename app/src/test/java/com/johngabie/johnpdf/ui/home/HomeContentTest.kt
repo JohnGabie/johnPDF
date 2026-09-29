@@ -6,12 +6,14 @@ import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.longClick
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.height
 import androidx.compose.ui.unit.width
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -91,9 +93,38 @@ class HomeContentTest {
         assertEquals("alturas diferentes: $recentes vs $todos", recentes.height.value, todos.height.value, 0.5f)
     }
 
-    @Test fun empty_recents_shows_hint() {
+    @Test fun recentes_vazio_mostra_estado_com_acao() {
         show(HomeUiState())
+        rule.onNodeWithText("Nenhum PDF aberto ainda").assertIsDisplayed()
         rule.onNodeWithText("Os PDFs que você abrir vão aparecer aqui.").assertIsDisplayed()
+        rule.onNodeWithTag("empty_state_action").performClick()
+        assertEquals(listOf("picker"), events)
+    }
+
+    @Test fun biblioteca_vazia_mostra_estado_com_acao() {
+        show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = true))
+        rule.onNodeWithText("Nenhum PDF no celular").assertIsDisplayed()
+        rule.onNodeWithText("Nenhum PDF encontrado no celular.").assertIsDisplayed()
+    }
+
+    @Test fun linha_da_lista_tem_72dp_e_e_clicavel_inteira() {
+        show(HomeUiState(recents = listOf(recent)))
+        val root = rule.onRoot().getBoundsInRoot()
+        val linha = rule.onNodeWithText("Fatura.pdf").assertIsDisplayed().getBoundsInRoot()
+        assertTrue("linha com ${linha.height}, esperado >= 72dp", linha.height >= 72.dp)
+        assertTrue("linha não ocupa a largura toda: ${linha.width} de ${root.width}", linha.width >= root.width - 1.dp)
+    }
+
+    @Test fun busca_vazia_nao_mostra_botao_de_limpar() {
+        show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = true))
+        rule.onNodeWithText("Buscar PDFs").assertIsDisplayed()
+        rule.onNodeWithContentDescription("Limpar busca").assertDoesNotExist()
+    }
+
+    @Test fun botao_de_limpar_zera_a_busca() {
+        show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = true, query = "bol"))
+        rule.onNodeWithContentDescription("Limpar busca").performClick()
+        assertEquals(listOf("query:"), events)
     }
 
     @Test fun recent_card_shows_origin_and_date_and_opens() {
@@ -133,9 +164,11 @@ class HomeContentTest {
         assertEquals(listOf("pdf:Boleto.pdf"), events)
     }
 
-    @Test fun all_tab_empty_with_query_says_no_match() {
+    @Test fun busca_sem_resultado_nao_oferece_acao() {
         show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = true, query = "zzz"))
+        rule.onNodeWithText("Nada encontrado").assertIsDisplayed()
         rule.onNodeWithText("Nenhum PDF com esse nome.").assertIsDisplayed()
+        rule.onNodeWithTag("empty_state_action").assertDoesNotExist()
     }
 
     @Test fun error_dialog_is_shown() {
