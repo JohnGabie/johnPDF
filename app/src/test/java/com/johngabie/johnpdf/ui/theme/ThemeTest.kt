@@ -1,14 +1,20 @@
 package com.johngabie.johnpdf.ui.theme
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Invariantes de tipografia e alvo de toque da spec D1 (docs/superpowers/specs/2026-09-29-design-d1-sistema-visual.md §8). */
 @RunWith(AndroidJUnit4::class)
 class ThemeTest {
+    @get:Rule val composeRule = createComposeRule()
+
     private val styles = mapOf(
         "headlineMedium" to JohnTypography.headlineMedium,
         "titleLarge" to JohnTypography.titleLarge,
@@ -52,5 +58,20 @@ class ThemeTest {
     @Test fun alvo_primario_acima_do_minimo_do_m3() {
         assertTrue("PrimaryTouchTarget deve ser >= 48dp", PrimaryTouchTarget >= 48.dp)
         assertTrue("ListItemMinHeight deve ser >= 72dp", ListItemMinHeight >= 72.dp)
+    }
+
+    // setContent só pode ser chamado uma vez por teste, então claro e escuro viram dois testes.
+    @Test fun tema_compoe_em_claro_sem_quebrar() {
+        composeRule.setContent {
+            JohnPdfTheme(dark = false) { androidx.compose.material3.Text("claro") }
+        }
+        composeRule.onNodeWithText("claro").assertIsDisplayed()
+    }
+
+    @Test fun tema_compoe_em_escuro_sem_quebrar() {
+        composeRule.setContent {
+            JohnPdfTheme(dark = true) { androidx.compose.material3.Text("escuro") }
+        }
+        composeRule.onNodeWithText("escuro").assertIsDisplayed()
     }
 }
