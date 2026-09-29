@@ -4,6 +4,7 @@ import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -96,5 +98,15 @@ class MuPdfEngineTest {
         val jobs = (0 until 10).map { i -> launch(Dispatchers.Default) { runCatching { engine.render(i, 800) } } }
         engine.close()
         jobs.forEach { it.join() }
+    }
+
+    @Test fun calls_after_close_are_cancelled_and_never_touch_document() = runBlocking {
+        val file = asset("normal.pdf")
+        engine.open(file)
+        engine.close()
+        assertThrows(CancellationException::class.java) { runBlocking { engine.render(0, 400) } }
+        assertThrows(CancellationException::class.java) { runBlocking { engine.pageSizes() } }
+        assertThrows(CancellationException::class.java) { runBlocking { engine.open(file) } }
+        Unit
     }
 }
