@@ -2,6 +2,7 @@ package com.johngabie.johnpdf.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -35,7 +36,10 @@ fun AppNavHost(homeViewModel: HomeViewModel, container: AppContainer) {
                     initializer { ReaderViewModel(File(route.path), route.title, MuPdfEngine(), container.settings) }
                 },
             )
-            ReaderScreen(vm, onBack = { nav.popBackStack() })
+            // dropUnlessResumed: um segundo toque (ou clique duplo) em "Voltar"/"OK"/"Cancelar"
+            // durante a transição de saída não deve empurrar mais uma vez a pilha (o que
+            // fecharia a Home também e deixaria a tela em branco).
+            ReaderScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
         }
     }
 }
