@@ -28,7 +28,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -36,11 +36,25 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +78,8 @@ import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -73,11 +89,15 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.johngabie.johnpdf.data.PAGE_RENDER_FAILED_MESSAGE
 import com.johngabie.johnpdf.engine.PageSize
-import com.johngabie.johnpdf.ui.common.BigButton
 import com.johngabie.johnpdf.ui.common.ErrorDialog
 import com.johngabie.johnpdf.ui.common.PasswordDialog
-import com.johngabie.johnpdf.ui.theme.MinTouchTarget
-import com.johngabie.johnpdf.ui.theme.PageGapColor
+import com.johngabie.johnpdf.ui.icons.JohnIcons
+import com.johngabie.johnpdf.ui.theme.MinGap
+import com.johngabie.johnpdf.ui.theme.PageElevation
+import com.johngabie.johnpdf.ui.theme.PageGap
+import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
+import com.johngabie.johnpdf.ui.theme.SpaceL
+import com.johngabie.johnpdf.ui.theme.SpaceS
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -123,6 +143,7 @@ fun ReaderContent(
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val status = state.status
     // Toque simples no PDF esconde/mostra as barras (mais área de leitura, sobretudo em paisagem).
     var barsVisible by rememberSaveable { mutableStateOf(true) }
@@ -132,9 +153,28 @@ fun ReaderContent(
     Scaffold(
         topBar = {
             AnimatedVisibility(showBars, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
-                ReaderTopBar(state.title, onBack)
+                ReaderTopBar(
+                    title = state.title,
+                    showRotation = status is ReaderStatus.Ready,
+                    rotationLocked = state.rotationLocked,
+                    onBack = onBack,
+                    onToggleRotation = {
+                        // O StateFlow do ViewModel ainda não recompôs aqui: o estado "depois do
+                        // toque" é o inverso do atual.
+                        val willBeLocked = !state.rotationLocked
+                        onToggleRotation()
+                        scope.launch {
+                            snackbarHostState.currentSnackbarData?.dismiss() // toques rápidos não enfileiram
+                            snackbarHostState.showSnackbar(
+                                message = if (willBeLocked) "Tela travada nesta posição" else "Rotação automática",
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+                    },
+                )
             }
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             AnimatedVisibility(
                 showBars && status is ReaderStatus.Ready,
@@ -144,10 +184,8 @@ fun ReaderContent(
                 ReaderBottomBar(
                     current = state.currentPage,
                     total = state.pageCount,
-                    rotationLocked = state.rotationLocked,
                     onPrevious = { scope.launch { listState.animateScrollToItem((state.currentPage - 1).coerceAtLeast(0)) } },
                     onNext = { scope.launch { listState.animateScrollToItem((state.currentPage + 1).coerceAtMost(state.pageCount - 1)) } },
-                    onToggleRotation = onToggleRotation,
                 )
             }
         },
@@ -200,48 +238,87 @@ private fun TrackVisiblePage(listState: LazyListState, onPageVisible: (Int) -> U
     }
 }
 
+/** Voltar é só a seta: é a convenção universal, e o `contentDescription` cobre o TalkBack (spec §3.3). */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ReaderTopBar(title: String, onBack: () -> Unit) {
-    Surface(tonalElevation = 3.dp) {
-        Row(
-            Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            TextButton(onClick = onBack, modifier = Modifier.heightIn(min = MinTouchTarget)) {
-                Text("← Voltar", style = MaterialTheme.typography.labelLarge)
+private fun ReaderTopBar(
+    title: String,
+    showRotation: Boolean,
+    rotationLocked: Boolean,
+    onBack: () -> Unit,
+    onToggleRotation: () -> Unit,
+) {
+    TopAppBar(
+        navigationIcon = {
+            IconButton(onClick = onBack, modifier = Modifier.size(48.dp)) {
+                Icon(JohnIcons.ArrowBack, contentDescription = "Voltar")
             }
-            Text(
-                title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f).padding(start = 8.dp),
+        },
+        title = {
+            Text(title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        },
+        actions = { if (showRotation) RotationLockAction(rotationLocked, onToggleRotation) },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
+    )
+}
+
+/**
+ * Sem preenchimento azul: destravado = ícone `onSurfaceVariant` sem fundo; travado =
+ * `onSurface` sobre `surfaceContainerHigh` (spec §6.2 / D1 §C). O `stateDescription` é o que
+ * o TalkBack anuncia depois do toque — o `contentDescription` nomeia a ação, não o estado.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RotationLockAction(locked: Boolean, onToggle: () -> Unit) {
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = { PlainTooltip { Text(if (locked) "Destravar rotação" else "Travar rotação") } },
+        state = rememberTooltipState(),
+    ) {
+        IconToggleButton(
+            checked = locked,
+            onCheckedChange = { onToggle() },
+            modifier = Modifier
+                .size(48.dp)
+                .semantics { stateDescription = if (locked) "Travada" else "Automática" },
+            colors = IconButtonDefaults.iconToggleButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                checkedContentColor = MaterialTheme.colorScheme.onSurface,
+                checkedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            ),
+        ) {
+            Icon(
+                if (locked) JohnIcons.ScreenLockRotation else JohnIcons.ScreenRotation,
+                contentDescription = "Travar rotação da tela",
+                modifier = Modifier.size(24.dp),
             )
         }
     }
 }
 
+/**
+ * Faixa única: rótulo "Página X de Y" à esquerda e as setas empilhadas à direita, 56dp cada
+ * com 8dp de folga. Empilhadas (e não lado a lado) porque ▲/▼ casam com o sentido da rolagem.
+ */
 @Composable
-private fun ReaderBottomBar(
-    current: Int,
-    total: Int,
-    rotationLocked: Boolean,
-    onPrevious: () -> Unit,
-    onNext: () -> Unit,
-    onToggleRotation: () -> Unit,
-) {
+private fun ReaderBottomBar(current: Int, total: Int, onPrevious: () -> Unit, onNext: () -> Unit) {
     Surface(tonalElevation = 3.dp) {
-        Column(
-            Modifier.fillMaxWidth().navigationBarsPadding().padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+        Row(
+            Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = SpaceL, vertical = SpaceS),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(pageLabel(current, total), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                BigButton(if (rotationLocked) "🔒 Travada" else "🔓 Gira sozinha", onToggleRotation)
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                BigButton("⬆ Anterior", onPrevious, Modifier.weight(1f), enabled = current > 0)
-                BigButton("⬇ Próxima", onNext, Modifier.weight(1f), enabled = current < total - 1)
+            Text(pageLabel(current, total), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            Column(verticalArrangement = Arrangement.spacedBy(MinGap)) {
+                FilledTonalIconButton(
+                    onClick = onPrevious,
+                    enabled = current > 0,
+                    modifier = Modifier.size(PrimaryTouchTarget),
+                ) { Icon(JohnIcons.KeyboardArrowUp, contentDescription = "Página anterior") }
+                FilledTonalIconButton(
+                    onClick = onNext,
+                    enabled = current < total - 1,
+                    modifier = Modifier.size(PrimaryTouchTarget),
+                ) { Icon(JohnIcons.KeyboardArrowDown, contentDescription = "Próxima página") }
             }
         }
     }
@@ -259,7 +336,7 @@ private fun PageList(
 ) {
     val currentSingleTap by rememberUpdatedState(onSingleTap)
     val currentDoubleTap by rememberUpdatedState(onDoubleTap)
-    BoxWithConstraints(Modifier.fillMaxSize().background(PageGapColor)) {
+    BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainerHigh)) {
         val contentWidth = maxWidth * zoom
         val widthPx = with(LocalDensity.current) { contentWidth.roundToPx() }
         var pinch by remember { mutableFloatStateOf(1f) }
@@ -279,8 +356,8 @@ private fun PageList(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.width(contentWidth).fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(PageGap),
+                contentPadding = PaddingValues(vertical = PageGap),
             ) {
                 itemsIndexed(pageSizes) { index, size -> PdfPage(index, size, widthPx, renderPage) }
             }
@@ -321,24 +398,28 @@ private fun PdfPage(index: Int, size: PageSize, widthPx: Int, renderPage: suspen
         image = renderPage(index, widthPx)?.let { PageImage.Loaded(it.asImageBitmap()) } ?: PageImage.Failed
     }
     val aspect = (size.width / size.height).takeIf { it.isFinite() && it > 0f } ?: A4_ASPECT
-    Box(
-        Modifier.fillMaxWidth().aspectRatio(aspect).background(Color.White),
-        contentAlignment = Alignment.Center,
+    // Color.White é o papel do PDF — a única cor fixa do app, porque a página não é superfície do tema.
+    Surface(
+        modifier = Modifier.fillMaxWidth().aspectRatio(aspect),
+        color = Color.White,
+        shadowElevation = PageElevation,
     ) {
-        when (val img = image) {
-            is PageImage.Loaded -> Image(
-                img.image,
-                contentDescription = "Página ${index + 1}",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillBounds,
-            )
-            PageImage.Failed -> Text(
-                PAGE_RENDER_FAILED_MESSAGE,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(16.dp),
-            )
-            PageImage.Loading -> Unit
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            when (val img = image) {
+                is PageImage.Loaded -> Image(
+                    img.image,
+                    contentDescription = "Página ${index + 1}",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds,
+                )
+                PageImage.Failed -> Text(
+                    PAGE_RENDER_FAILED_MESSAGE,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(SpaceL),
+                )
+                PageImage.Loading -> Unit
+            }
         }
     }
 }
