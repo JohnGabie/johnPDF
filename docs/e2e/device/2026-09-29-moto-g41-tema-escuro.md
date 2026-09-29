@@ -18,7 +18,7 @@ baseline do M3 apareceu em nenhuma superfície.
 |---|---------|-----------|------------|
 | 1 | Abrir o app com o sistema no escuro | PASS | Home sobe direto no escuro, sem flash branco. Antes do `values-night/`, o `Theme.Material.Light` do manifesto pintava a janela de branco até o primeiro frame do Compose. |
 | 2 | Ícones da barra de status no escuro | PASS | Ícones claros sobre a barra transparente. Era o caso que o `SystemBarStyle.light(...)` fixo quebrava. |
-| 3 | Barra de abas da Home no escuro | PASS | `barContainer` se lê como plano separado do conteúdo; rótulos Recentes/Todos os PDFs legíveis; pílula do item selecionado visível. |
+| 3 | Barra de abas da Home no escuro | PASS | A barra se lê como plano separado do conteúdo; rótulos Recentes/Todos os PDFs legíveis; pílula do item selecionado visível. |
 | 4 | Ícone do PDF na lista (errorContainer) no escuro | PASS | Vermelho escuro com o glifo claro por cima — continua sendo "vermelho de PDF" e não some no fundo. |
 | 5 | Diálogo de erro no escuro | PASS | Container neutro (cinza azulado), texto legível, "OK" no azul do tema. Nenhum lilás — era exatamente o sintoma do `darkColorScheme()` parcial. |
 | 6 | Campo de busca ("Todos os PDFs") no escuro | PASS | A pílula `surfaceContainerHigh` se destaca do fundo; placeholder e lupa legíveis. |
@@ -47,10 +47,31 @@ cor**: num celular claro, `SYSTEM` e `LIGHT` pintam igual; num escuro, `SYSTEM` 
 conserto sem tornar a ordem do botão imprevisível, e há um teste
 (`ThemeSwitchTest`) registrando isso para ninguém "arrumar" depois.
 
+## Revalidação após a integração em `feat/v1`
+
+O teste acima rodou no worktree `johnPDF-darkmode-switch`, que carregava a sua
+própria cópia do modo escuro. Na integração essa cópia foi descartada e só o
+Theme Switch entrou por cima do modo escuro que já estava em `feat/v1`. Como o
+`JohnPdfTheme` mudou de assinatura nessa costura (passou a prover
+`LocalJohnColors` e `LocalThemeController` juntos), a troca foi refeita no mesmo
+aparelho com o APK de `feat/v1`.
+
+**Build:** `app-arm64-v8a-debug.apk` de `feat/v1`, instalado com `adb install -r`.
+**Sistema do aparelho:** modo noturno em `auto`, resolvendo para **escuro** na hora do teste.
+
+| # | Modo | Evidência | Resultado |
+|---|------|-----------|-----------|
+| 14 | `LIGHT` (estado que sobreviveu à reinstalação) | `../img/theme-switch-01-light.png` | PASS — app **claro** com o sistema no escuro: é a prova de que a escolha manual ganha do sistema. Ícone sol. |
+| 15 | `DARK` (um toque) | `../img/theme-switch-02-dark.png` | PASS — superfícies escuras, ícone lua, e os ícones da barra de status do sistema viraram claros no mesmo frame. |
+| 16 | `SYSTEM` (mais um toque) | `../img/theme-switch-03-system.png` | PASS — ícone `brightness_auto`; o app segue o sistema e continua escuro. É o passo que "não muda a cor" descrito na nota acima. |
+
+O modo gravado em `SharedPreferences` acompanhou cada toque (`LIGHT` → `DARK` →
+`SYSTEM`, lido direto de `shared_prefs/theme.xml`), confirmando o cenário 13 no
+build integrado.
+
 ## Limpeza realizada
 
 - `layout-duas-colunas.pdf` e `normal.pdf` copiados para `/sdcard/Download/`
   durante o teste; remover com
   `adb shell rm /sdcard/Download/layout-duas-colunas.pdf /sdcard/Download/normal.pdf`.
-- Modo de tema do app deixado em **claro**; um toque no botão do header volta ao
-  automático em dois passos.
+- Modo de tema do app deixado em **seguir o sistema** ao fim da revalidação.

@@ -13,3 +13,5 @@ captures/
 keystore.properties
 .venv-tools/
 __pycache__/
+.kotlin/
+.playwright-mcp/

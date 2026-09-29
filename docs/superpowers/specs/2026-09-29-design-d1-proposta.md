@@ -147,8 +147,13 @@ Filled = uma ação principal por tela/diálogo; FilledTonal = ações frequente
 
 ## G. Perguntas em aberto (decisão de gosto)
 1. **Barra do leitor:** manter texto nos botões ("↑ Anterior" / "Próxima ↓") ou só setas com "4 de 200" no meio? (recomendo manter texto)
+r: poderia transforar em setinha e ficar no canto direito um em cima do outro em forma de cetas
 2. **Voltar:** só a seta (padrão Android) ou seta + "Voltar"? (recomendo só seta)
+r:sim, remove o voltar e somente deixa seta
 3. **"Abrir PDF"** como botão flutuante (FAB) no canto inferior direito, ou manter no header como botão tonal menor?
+r: mantem no header, com um leve ajust.
 4. **Modo escuro** da interface: sim (seguindo o sistema) ou não por enquanto?
-5. **Cor:** cor fixa johnPDF (índigo `#3558D4`) ou cor dinâmica do papel de parede (Android 12+)?
-6. **Fonte:** manter a fonte do sistema ou adotar Atkinson Hyperlegible Next?
+r: sim é barato de fazer.
+5. **Cor:** cor fixa johnPDF (índigo `#3558D4`) ou cor dinâmica do papel de parede (Android 12+)? r: nao gosto desse tom de indigo, va em coolors.co/palettes/trending e selecione 1 ou 3 palletas com algum ton de azul, fazendo esse estudo de cor e me retorne uma paleta que goste.
+6. **Fonte:** manter a fonte do sistema ou adotar Atkinson Hyperlegible Next? 
+7. r: Atkinson Hyperlegible Next
