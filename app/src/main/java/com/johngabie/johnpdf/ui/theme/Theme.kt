@@ -6,6 +6,9 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +33,15 @@ val MaxActionWidth = 360.dp
 // --- Gap entre páginas do PDF (spec D1 §4) ---
 val PageGap = SpaceS
 val PageElevation = 1.dp
+
+/**
+ * Fundo da página renderizada do PDF.
+ *
+ * Literal e imutável de propósito: o conteúdo do PDF NÃO acompanha o modo escuro
+ * (inverter a página é "modo noturno do PDF", fora do escopo da v1). Não trocar
+ * por `MaterialTheme.colorScheme.surface`. Coberto por `DarkThemeTest`.
+ */
+val PdfPageBackground = Color.White
 
 // ------------------------------------------------------------- esquema claro
 // Paleta Blue Lagoon (estudo de cor a021abb48ee0a08b3), seed #006494.
@@ -114,6 +126,61 @@ private val DarkColors = darkColorScheme(
     scrim = Color(0xFF000000),
 )
 
+// ------------------------------------------- papéis que o M3 não tem
+
+/** Cores do johnPDF sem papel correspondente no Material 3. */
+data class JohnColors(
+    /** Vão entre as páginas no leitor. Quase preto no escuro, para emoldurar a página branca. */
+    val pageGap: Color,
+    /** Ícone de PDF no cartão da lista e o quadrado arredondado atrás dele. */
+    val pdfIcon: Color,
+    val pdfIconContainer: Color,
+    /**
+     * Pílula da aba selecionada. Papel próprio porque nenhum container claro do M3
+     * chega a 3:1 contra uma NavigationBar clara (secondaryContainer dá 1,12:1) —
+     * e "qual aba está aberta" é estado de componente (WCAG 1.4.11).
+     */
+    val tabIndicator: Color,
+    val onTabIndicator: Color,
+)
+
+private val LightJohnColors = JohnColors(
+    pageGap = Color(0xFFE5EAEE),        // = surfaceContainerHigh
+    pdfIcon = Color(0xFFC62828),
+    pdfIconContainer = Color(0xFFFDECEA),
+    tabIndicator = Color(0xFF365A6C),   // 6,40:1 contra surfaceContainer
+    onTabIndicator = Color(0xFFFFFFFF), // 7,41:1 dentro da pílula
+)
+
+private val DarkJohnColors = JohnColors(
+    pageGap = Color(0xFF0A0F12),        // = surfaceContainerLowest; 19,27:1 com a página branca
+    pdfIcon = Color(0xFFFF8A80),        // vermelho próprio, para não virar "vermelho de erro"
+    pdfIconContainer = Color(0xFF262B2F),
+    tabIndicator = Color(0xFF5A7385),   // 3,28:1 contra surfaceContainer
+    onTabIndicator = Color(0xFFFFFFFF), // 4,97:1 dentro da pílula
+)
+
+private val LocalJohnColors = staticCompositionLocalOf { LightJohnColors }
+
+/**
+ * Acesso no estilo `MaterialTheme.colorScheme`.
+ *
+ * `barColor` e `dialogColor` existem para que a escolha de nível de superfície
+ * fique num lugar só e testável, em vez de espalhada pelas telas.
+ */
+object JohnTheme {
+    val colors: JohnColors
+        @Composable @ReadOnlyComposable get() = LocalJohnColors.current
+
+    /** Fundo das barras: NavigationBar, top bar rolada, barra inferior do leitor. */
+    val barColor: Color
+        @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainer
+
+    /** Fundo dos AlertDialog e do campo de busca. */
+    val dialogColor: Color
+        @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainerHigh
+}
+
 // A troca para Atkinson Hyperlegible Next é um commit isolado (spec §2.2), fora deste plano.
 internal val JohnFontFamily = FontFamily.Default
 
@@ -135,12 +202,16 @@ internal val JohnTypography = Typography(
 /** Exposto só para os testes de contraste. */
 internal val LightSchemeForTest = LightColors
 internal val DarkSchemeForTest = DarkColors
+internal val LightJohnForTest = LightJohnColors
+internal val DarkJohnForTest = DarkJohnColors
 
 @Composable
 fun JohnPdfTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = if (dark) DarkColors else LightColors,
-        typography = JohnTypography,
-        content = content,
-    )
+    CompositionLocalProvider(LocalJohnColors provides if (dark) DarkJohnColors else LightJohnColors) {
+        MaterialTheme(
+            colorScheme = if (dark) DarkColors else LightColors,
+            typography = JohnTypography,
+            content = content,
+        )
+    }
 }

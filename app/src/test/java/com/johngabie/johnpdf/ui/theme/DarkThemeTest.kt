@@ -6,6 +6,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,5 +44,33 @@ class DarkThemeTest {
         val (claro, escuro) = bothThemes { MaterialTheme.colorScheme }
         assertEquals(false, claro.surface == escuro.surface)
         assertEquals(false, claro.surfaceContainer == escuro.surfaceContainer)
+    }
+
+    @Test fun page_gap_follows_the_theme() {
+        val (claro, escuro) = bothThemes { JohnTheme.colors }
+        assertEquals(Color(0xFFE5EAEE), claro.pageGap)
+        assertEquals(Color(0xFF0A0F12), escuro.pageGap)
+    }
+
+    /** Requisito do usuário: a página do PDF é branca nos dois modos. */
+    @Test fun pdf_page_stays_white_in_both_modes() {
+        assertEquals(Color.White, PdfPageBackground)
+        val (claro, escuro) = bothThemes { JohnTheme.colors }
+        assertNotEquals(Color.White, claro.pageGap)
+        assertNotEquals(Color.White, escuro.pageGap)
+    }
+
+    /** No escuro o vão precisa emoldurar a página branca. */
+    @Test fun page_gap_frames_the_white_page_in_dark() {
+        val (_, escuro) = bothThemes { JohnTheme.colors }
+        val r = contrast(Color.White, escuro.pageGap)
+        assertTrue("vão/página no escuro = %.2f:1, mínimo 3:1".format(r), r >= 3.0)
+    }
+
+    /** As barras e os diálogos têm um papel só, e ele muda com o tema. */
+    @Test fun bar_and_dialog_colors_come_from_the_scheme() {
+        val (claro, escuro) = bothThemes { JohnTheme.barColor to JohnTheme.dialogColor }
+        assertEquals(Color(0xFFEBEFF2) to Color(0xFFE5EAEE), claro)
+        assertEquals(Color(0xFF1B2124) to Color(0xFF262B2F), escuro)
     }
 }

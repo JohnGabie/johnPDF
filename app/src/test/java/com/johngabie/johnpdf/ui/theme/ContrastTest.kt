@@ -181,6 +181,28 @@ class ContrastTest {
         }
     }
 
+    /** Review Focus 4: "qual aba está aberta" é estado de componente (WCAG 1.4.11). */
+    @Test fun tab_indicator_stands_out_from_the_navigation_bar() {
+        listOf(
+            Triple("claro", LightSchemeForTest, LightJohnForTest),
+            Triple("escuro", DarkSchemeForTest, DarkJohnForTest),
+        ).forEach { (n, s, j) ->
+            val pilula = contrast(j.tabIndicator, s.surfaceContainer)
+            assertTrue("[$n] indicador/NavigationBar = %.2f:1, mínimo 3:1".format(pilula), pilula >= 3.0)
+            val rotulo = contrast(j.onTabIndicator, j.tabIndicator)
+            assertTrue("[$n] rótulo no indicador = %.2f:1, mínimo 4.5:1".format(rotulo), rotulo >= 4.5)
+            val naoSelecionada = contrast(s.onSurfaceVariant, s.surfaceContainer)
+            assertTrue("[$n] aba não selecionada = %.2f:1, mínimo 4.5:1".format(naoSelecionada), naoSelecionada >= 4.5)
+        }
+    }
+
+    @Test fun pdf_icon_is_visible_on_its_container() {
+        listOf("claro" to LightJohnForTest, "escuro" to DarkJohnForTest).forEach { (n, j) ->
+            val r = contrast(j.pdfIcon, j.pdfIconContainer)
+            assertTrue("[$n] ícone de PDF = %.2f:1, mínimo 3:1".format(r), r >= 3.0)
+        }
+    }
+
     /** Nenhum papel pode ficar na cor de "não preenchido" (lilás do baseline M3). */
     @Test fun no_role_keeps_the_material_baseline_purple() {
         val lilases = listOf(

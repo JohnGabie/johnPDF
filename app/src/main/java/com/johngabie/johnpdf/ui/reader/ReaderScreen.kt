@@ -69,7 +69,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -92,9 +91,11 @@ import com.johngabie.johnpdf.engine.PageSize
 import com.johngabie.johnpdf.ui.common.ErrorDialog
 import com.johngabie.johnpdf.ui.common.PasswordDialog
 import com.johngabie.johnpdf.ui.icons.JohnIcons
+import com.johngabie.johnpdf.ui.theme.JohnTheme
 import com.johngabie.johnpdf.ui.theme.MinGap
 import com.johngabie.johnpdf.ui.theme.PageElevation
 import com.johngabie.johnpdf.ui.theme.PageGap
+import com.johngabie.johnpdf.ui.theme.PdfPageBackground
 import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
 import com.johngabie.johnpdf.ui.theme.SpaceL
 import com.johngabie.johnpdf.ui.theme.SpaceS
@@ -336,7 +337,7 @@ private fun PageList(
 ) {
     val currentSingleTap by rememberUpdatedState(onSingleTap)
     val currentDoubleTap by rememberUpdatedState(onDoubleTap)
-    BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceContainerHigh)) {
+    BoxWithConstraints(Modifier.fillMaxSize().background(JohnTheme.colors.pageGap)) {
         val contentWidth = maxWidth * zoom
         val widthPx = with(LocalDensity.current) { contentWidth.roundToPx() }
         var pinch by remember { mutableFloatStateOf(1f) }
@@ -398,10 +399,11 @@ private fun PdfPage(index: Int, size: PageSize, widthPx: Int, renderPage: suspen
         image = renderPage(index, widthPx)?.let { PageImage.Loaded(it.asImageBitmap()) } ?: PageImage.Failed
     }
     val aspect = (size.width / size.height).takeIf { it.isFinite() && it > 0f } ?: A4_ASPECT
-    // Color.White é o papel do PDF — a única cor fixa do app, porque a página não é superfície do tema.
+    // PdfPageBackground é o papel do PDF — a única cor fixa do app, porque a página
+    // não é superfície do tema (vive em Theme.kt, branca nos dois modos).
     Surface(
         modifier = Modifier.fillMaxWidth().aspectRatio(aspect),
-        color = Color.White,
+        color = PdfPageBackground,
         shadowElevation = PageElevation,
     ) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
