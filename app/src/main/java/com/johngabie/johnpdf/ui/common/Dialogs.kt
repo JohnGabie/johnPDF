@@ -39,7 +39,11 @@ fun ErrorDialog(error: AppError, onDismiss: () -> Unit) {
     )
 }
 
-/** Substitui o antigo ConfirmDialog("Sim"/"Não") — texto fixo, só usado para remover um recente (spec §7). */
+/**
+ * Substitui o antigo `ConfirmDialog("Sim"/"Não")` — texto fixo, só usado para remover um
+ * recente (spec §7). "Remover" diz o que a ação faz; num gesto destrutivo isso é mais seguro
+ * do que um "Sim" genérico.
+ */
 @Composable
 fun RemoveDialog(onConfirm: () -> Unit, onCancel: () -> Unit) {
     AlertDialog(
@@ -49,22 +53,6 @@ fun RemoveDialog(onConfirm: () -> Unit, onCancel: () -> Unit) {
         text = { Text("O arquivo continua no celular.", style = MaterialTheme.typography.bodyLarge) },
         confirmButton = { PrimaryButton("Remover", onConfirm) },
         dismissButton = { TextButton(onClick = onCancel) { Text("Cancelar", style = MaterialTheme.typography.labelLarge) } },
-    )
-}
-
-/**
- * Ponte temporária: `HomeScreen.kt` ainda chama esta função e só migra para [RemoveDialog] na
- * Task 6 do plano D1. Mantida sem mudanças para o build continuar verde a cada commit
- * (Global Constraints do plano); sai junto com `BigButton` na Task 10.
- */
-@Deprecated("Sai na Task 6 do plano D1; use RemoveDialog.", ReplaceWith("RemoveDialog(onYes, onNo)"))
-@Composable
-fun ConfirmDialog(question: String, onYes: () -> Unit, onNo: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onNo,
-        text = { Text(question, style = MaterialTheme.typography.titleMedium) },
-        confirmButton = { BigButton("Sim", onYes) },
-        dismissButton = { BigButton("Não", onNo) },
     )
 }
 

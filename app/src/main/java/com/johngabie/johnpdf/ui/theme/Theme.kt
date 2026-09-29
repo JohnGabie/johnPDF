@@ -31,12 +31,6 @@ val MaxActionWidth = 360.dp
 val PageGap = SpaceS
 val PageElevation = 1.dp
 
-@Deprecated("Sai na Task 10 do plano D1; use PrimaryTouchTarget (§3.1) ou os componentes de Buttons.kt.")
-internal val MinTouchTarget = 64.dp
-
-@Deprecated("Sai na Task 10 do plano D1; use MaterialTheme.colorScheme.surfaceContainerHigh.")
-val PageGapColor = Color(0xFFBDBDBD)
-
 // Valores provisórios — a paleta final está pendente do estudo em coolors.co (spec D1 §G5,
 // fora de escopo aqui). A estrutura (todos os papéis usados pelo app, incluindo
 // surfaceContainer*, secondaryContainer e outlineVariant) já entra completa para acabar
