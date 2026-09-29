@@ -12,7 +12,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +58,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -69,10 +67,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -318,18 +319,32 @@ private fun PageList(
     BoxWithConstraints(Modifier.fillMaxSize().background(JohnTheme.colors.pageGap)) {
         val contentWidth = maxWidth * zoom
         val widthPx = with(LocalDensity.current) { contentWidth.roundToPx() }
-        var pinch by remember { mutableFloatStateOf(1f) }
+        // Zoom "ao vivo" da pinça em andamento (null = sem pinça). O preview é sempre
+        // liveZoom/zoom: quando o zoom confirmado chega pelo ViewModel a razão vira 1 na mesma
+        // recomposição em que o layout cresce, então não há quadro de salto nem de escala dupla.
+        var liveZoom by remember { mutableStateOf<Float?>(null) }
+        var pinchOrigin by remember { mutableStateOf(TransformOrigin.Center) }
+        val preview = (liveZoom ?: zoom) / zoom
+        LaunchedEffect(zoom) { liveZoom = null }
         Box(
             Modifier
                 .fillMaxSize()
                 .pointerInput(zoom) {
                     detectPinch(
-                        onPinch = { s -> pinch = (zoom * s).coerceIn(ReaderViewModel.MIN_ZOOM, ReaderViewModel.MAX_ZOOM) / zoom },
-                        onPinchEnd = { s -> pinch = 1f; onZoomChange(zoom * s) },
+                        onPinch = { s, centroid ->
+                            // Amplia em volta dos dedos, não do centro da tela: senão o trecho
+                            // que o usuário está segurando foge da mão durante o gesto.
+                            pinchOrigin = TransformOrigin(
+                                if (size.width > 0) (centroid.x / size.width).coerceIn(0f, 1f) else 0.5f,
+                                if (size.height > 0) (centroid.y / size.height).coerceIn(0f, 1f) else 0.5f,
+                            )
+                            liveZoom = (zoom * s).coerceIn(ReaderViewModel.MIN_ZOOM, ReaderViewModel.MAX_ZOOM)
+                        },
+                        onPinchEnd = { s -> onZoomChange(zoom * s) },
                     )
                 }
                 .pointerInput(Unit) { detectTapGestures(onTap = { currentSingleTap() }, onDoubleTap = { currentDoubleTap() }) }
-                .graphicsLayer { scaleX = pinch; scaleY = pinch }
+                .graphicsLayer { scaleX = preview; scaleY = preview; transformOrigin = pinchOrigin }
                 .horizontalScroll(rememberScrollState(), enabled = zoom > 1f),
         ) {
             LazyColumn(
@@ -383,22 +398,53 @@ private fun PageList(
     }
 }
 
-/** Pinça com dois dedos, interceptada na passagem Initial para não brigar com a rolagem da lista. */
-private suspend fun PointerInputScope.detectPinch(onPinch: (Float) -> Unit, onPinchEnd: (Float) -> Unit) {
+/**
+ * Pinça com dois dedos, interceptada na passagem Initial para não brigar com a rolagem da lista.
+ *
+ * A escala é sempre `abertura atual / abertura âncora` — medida absoluta, não o produto das
+ * razões quadro a quadro de `calculateZoom()`. Com o produto, todo quadro em que o conjunto de
+ * dedos muda (segundo dedo descendo, dedo extra encostando, dedo saindo e voltando) entra no
+ * acumulado como 1.0 ou como um salto de centroide, e o erro fica preso no resultado: o zoom
+ * deixa de acompanhar os dedos. Com a âncora, cada quadro é recalculado do zero e o gesto é
+ * proporcional por construção; quando o conjunto de dedos muda, re-ancoramos preservando a
+ * escala já alcançada, então o reposicionamento não move a página.
+ */
+private suspend fun PointerInputScope.detectPinch(
+    onPinch: (scale: Float, centroid: Offset) -> Unit,
+    onPinchEnd: (scale: Float) -> Unit,
+) {
     awaitEachGesture {
         awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+        var anchor = 0f // abertura que corresponde a scale = 1; 0 = precisa (re)ancorar
         var scale = 1f
-        var pinching = false
+        var pinched = false
+        var fingers = emptyList<PointerId>()
         do {
             val event = awaitPointerEvent(PointerEventPass.Initial)
-            if (event.changes.count { it.pressed } >= 2) {
-                pinching = true
-                scale *= event.calculateZoom()
-                onPinch(scale)
+            val down = event.changes.filter { it.pressed }
+            val ids = down.map { it.id }
+            if (ids != fingers) {
+                fingers = ids
+                anchor = 0f
+            }
+            if (down.size >= 2) {
+                val positions = down.map { it.position }
+                val spread = fingerSpread(positions)
+                if (spread > 0f) {
+                    if (anchor <= 0f) {
+                        anchor = spread / scale // (re)ancora sem mexer na escala já alcançada
+                    } else {
+                        scale = spread / anchor
+                        pinched = true
+                    }
+                    // Emite também no quadro da âncora: assim o ponto de ampliação já nasce
+                    // debaixo dos dedos e o primeiro quadro com escala nova não salta.
+                    onPinch(scale, centroidOf(positions))
+                }
                 event.changes.forEach { it.consume() }
             }
         } while (event.changes.any { it.pressed })
-        if (pinching) onPinchEnd(scale)
+        if (pinched) onPinchEnd(scale)
     }
 }
 
