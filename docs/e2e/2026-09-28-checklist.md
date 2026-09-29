@@ -81,11 +81,20 @@ Arquivos salvos (todos em `docs/e2e/logs/`):
   (as demais linhas do arquivo são ruído do próprio `uiautomator dump` usado para ler a tela —
   processos curtos `com.android.commands.uiautomator.Launcher` que sobem e descem a cada
   chamada nossa, sem relação com o app testado.) Uma linha do `ActivityThread` do sistema
-  aparece por causa do `adb install -r` feito antes do teste (reinstalação normal, não uma
-  falha em tempo de execução):
+  também aparece no arquivo:
   ```
   09-29 04:13:28.749  3097  3097 D ActivityThread: Package [com.johngabie.johnpdf] reported as REPLACED, but missing application info. Assuming REMOVED.
   ```
+  Essa linha está timestampada às 04:13:28, e o `logcat -c` deste cenário rodou por volta das
+  04:12:22 (primeira linha do arquivo, logo após o clear) — ou seja, ela foi capturada **durante**
+  a execução do cenário, não antes dela; a explicação anterior ("veio do `adb install -r` feito
+  antes do teste") não se sustenta com esse horário e foi removida. O PID do app (4384) não mudou
+  antes e depois (`14-pid.txt`), então não houve reinstalação nem restart do processo do
+  `com.johngabie.johnpdf` nessa janela. A causa exata dessa linha do `ActivityThread` (PID 3097,
+  processo do sistema, não do app) **não foi confirmada** — não se inventa uma causa aqui; ela não
+  corresponde a nenhum crash, OOM ou kill do app nos critérios verificados (nenhuma linha
+  `FATAL`/`OutOfMemory`/`lowmemorykiller`/`ActivityManager: Process ... (kill)`, `logcat -b crash`
+  vazio, PID estável).
 - `14-meminfo.txt` — `dumpsys meminfo` do processo (pid 4384) logo após as 53 páginas de
   rolagem sob zoom:
   ```
