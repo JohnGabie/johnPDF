@@ -3,6 +3,11 @@ package com.johngabie.johnpdf.ui.reader
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -42,6 +47,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -60,6 +67,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.johngabie.johnpdf.data.PAGE_RENDER_FAILED_MESSAGE
 import com.johngabie.johnpdf.engine.PageSize
@@ -114,11 +124,23 @@ fun ReaderContent(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val status = state.status
+    // Toque simples no PDF esconde/mostra as barras (mais área de leitura, sobretudo em paisagem).
+    var barsVisible by rememberSaveable { mutableStateOf(true) }
+    val showBars = barsVisible || status !is ReaderStatus.Ready
+    ApplySystemBarsVisibility(showBars)
 
     Scaffold(
-        topBar = { ReaderTopBar(state.title, onBack) },
+        topBar = {
+            AnimatedVisibility(showBars, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
+                ReaderTopBar(state.title, onBack)
+            }
+        },
         bottomBar = {
-            if (status is ReaderStatus.Ready) {
+            AnimatedVisibility(
+                showBars && status is ReaderStatus.Ready,
+                enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+            ) {
                 ReaderBottomBar(
                     current = state.currentPage,
                     total = state.pageCount,
@@ -144,10 +166,23 @@ fun ReaderContent(
                 is ReaderStatus.Failed -> ErrorDialog(status.error, onDismiss = onBack)
                 is ReaderStatus.Ready -> {
                     TrackVisiblePage(listState, onPageVisible)
-                    PageList(status.pageSizes, state.zoom, listState, onZoomChange, onDoubleTap, renderPage)
+                    PageList(status.pageSizes, state.zoom, listState, onZoomChange, onDoubleTap, onSingleTap = { barsVisible = !barsVisible }, renderPage)
                 }
             }
         }
+    }
+}
+
+/** Esconde status/navigation bar do sistema junto com as barras do leitor; deslizar da borda mostra temporariamente. */
+@Composable
+private fun ApplySystemBarsVisibility(visible: Boolean) {
+    val window = LocalActivity.current?.window ?: return
+    DisposableEffect(window, visible) {
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        if (visible) controller.show(WindowInsetsCompat.Type.systemBars())
+        else controller.hide(WindowInsetsCompat.Type.systemBars())
+        onDispose { controller.show(WindowInsetsCompat.Type.systemBars()) }
     }
 }
 
@@ -219,8 +254,11 @@ private fun PageList(
     listState: LazyListState,
     onZoomChange: (Float) -> Unit,
     onDoubleTap: () -> Unit,
+    onSingleTap: () -> Unit,
     renderPage: suspend (Int, Int) -> Bitmap?,
 ) {
+    val currentSingleTap by rememberUpdatedState(onSingleTap)
+    val currentDoubleTap by rememberUpdatedState(onDoubleTap)
     BoxWithConstraints(Modifier.fillMaxSize().background(PageGapColor)) {
         val contentWidth = maxWidth * zoom
         val widthPx = with(LocalDensity.current) { contentWidth.roundToPx() }
@@ -234,7 +272,7 @@ private fun PageList(
                         onPinchEnd = { s -> pinch = 1f; onZoomChange(zoom * s) },
                     )
                 }
-                .pointerInput(Unit) { detectTapGestures(onDoubleTap = { onDoubleTap() }) }
+                .pointerInput(Unit) { detectTapGestures(onTap = { currentSingleTap() }, onDoubleTap = { currentDoubleTap() }) }
                 .graphicsLayer { scaleX = pinch; scaleY = pinch }
                 .horizontalScroll(rememberScrollState(), enabled = zoom > 1f),
         ) {

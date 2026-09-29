@@ -9,7 +9,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.johngabie.johnpdf.data.AppError
@@ -103,5 +106,20 @@ class ReaderContentTest {
         show(ReaderUiState("doc.pdf", ReaderStatus.Loading))
         rule.onNodeWithText("Abrindo…").assertIsDisplayed()
         assertTrue(submitted == null)
+    }
+
+    @Test fun tapping_the_page_hides_and_restores_the_bars() {
+        show(ReaderUiState("doc.pdf", ReaderStatus.Ready(List(3) { a4 })))
+        rule.onNodeWithContentDescription("Página 1").performTouchInput { click() }
+        rule.mainClock.advanceTimeBy(1_000)
+        rule.waitForIdle()
+        rule.onNodeWithText("⬇ Próxima").assertDoesNotExist()
+        rule.onNodeWithText("← Voltar").assertDoesNotExist()
+
+        rule.onNodeWithContentDescription("Página 1").performTouchInput { click() }
+        rule.mainClock.advanceTimeBy(1_000)
+        rule.waitForIdle()
+        rule.onNodeWithText("⬇ Próxima").assertIsDisplayed()
+        rule.onNodeWithText("← Voltar").assertIsDisplayed()
     }
 }
