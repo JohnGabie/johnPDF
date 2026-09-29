@@ -99,6 +99,7 @@ import com.johngabie.johnpdf.ui.theme.PdfPageBackground
 import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
 import com.johngabie.johnpdf.ui.theme.SpaceL
 import com.johngabie.johnpdf.ui.theme.SpaceS
+import com.johngabie.johnpdf.ui.theme.readableIconButtonColors
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -303,7 +304,9 @@ private fun RotationLockAction(locked: Boolean, onToggle: () -> Unit) {
  */
 @Composable
 private fun ReaderBottomBar(current: Int, total: Int, onPrevious: () -> Unit, onNext: () -> Unit) {
-    Surface(tonalElevation = 3.dp) {
+    // Sem tonalElevation: no escuro ele tinge a superfície com primary e reintroduz
+    // cor vazada. O nível de superfície é escolhido explicitamente.
+    Surface(color = JohnTheme.barColor, contentColor = MaterialTheme.colorScheme.onSurface) {
         Row(
             Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = SpaceL, vertical = SpaceS),
             verticalAlignment = Alignment.CenterVertically,
@@ -313,11 +316,13 @@ private fun ReaderBottomBar(current: Int, total: Int, onPrevious: () -> Unit, on
                 FilledTonalIconButton(
                     onClick = onPrevious,
                     enabled = current > 0,
+                    colors = readableIconButtonColors(),
                     modifier = Modifier.size(PrimaryTouchTarget),
                 ) { Icon(JohnIcons.KeyboardArrowUp, contentDescription = "Página anterior") }
                 FilledTonalIconButton(
                     onClick = onNext,
                     enabled = current < total - 1,
+                    colors = readableIconButtonColors(),
                     modifier = Modifier.size(PrimaryTouchTarget),
                 ) { Icon(JohnIcons.KeyboardArrowDown, contentDescription = "Próxima página") }
             }

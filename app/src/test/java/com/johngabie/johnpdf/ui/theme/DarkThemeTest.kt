@@ -3,6 +3,7 @@ package com.johngabie.johnpdf.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
@@ -81,6 +82,35 @@ class DarkThemeTest {
         assertEquals(Color(0xFF5A7385), escuro.first)
         assertNotEquals(claro.first, claro.second)
         assertNotEquals(escuro.first, escuro.second)
+    }
+
+    /**
+     * "Anterior" desabilitado na página 1 precisa ser lido, não adivinhado.
+     * O 38% do M3 dá 2,32:1 no claro; 60% dá 3,96:1.
+     *
+     * Cobre os dois helpers porque as duas formas de "Anterior/Próxima" existem no app:
+     * `Button` (diálogo de senha) e `FilledTonalIconButton` (setas do leitor).
+     */
+    @Test fun disabled_button_label_is_readable_in_both_modes() {
+        val (claro, escuro) = bothThemes {
+            val botao = readableButtonColors()
+            val seta = readableIconButtonColors()
+            listOf(
+                "Button" to (botao.disabledContainerColor to botao.disabledContentColor),
+                "FilledTonalIconButton" to (seta.disabledContainerColor to seta.disabledContentColor),
+            )
+        }
+        listOf(
+            Triple("claro", claro, Color(0xFFEBEFF2)),   // surfaceContainer do claro
+            Triple("escuro", escuro, Color(0xFF1B2124)), // surfaceContainer do escuro
+        ).forEach { (modo, variantes, barra) ->
+            variantes.forEach { (qual, cores) ->
+                val fundo = cores.first.compositeOver(barra)
+                val rotulo = cores.second.compositeOver(fundo)
+                val r = contrast(rotulo, fundo)
+                assertTrue("[$modo] $qual desabilitado = %.2f:1, mínimo 3:1".format(r), r >= 3.0)
+            }
+        }
     }
 
     /** As barras e os diálogos têm um papel só, e ele muda com o tema. */

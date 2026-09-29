@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.johngabie.johnpdf.data.AppError
 import com.johngabie.johnpdf.ui.icons.JohnIcons
+import com.johngabie.johnpdf.ui.theme.JohnTheme
 import com.johngabie.johnpdf.ui.theme.SpaceM
 import com.johngabie.johnpdf.ui.theme.SpaceXs
 
@@ -32,6 +34,10 @@ import com.johngabie.johnpdf.ui.theme.SpaceXs
 fun ErrorDialog(error: AppError, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = JohnTheme.dialogColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        iconContentColor = MaterialTheme.colorScheme.error,
         icon = { Icon(JohnIcons.Error, contentDescription = null) },
         text = { Text(error.message, style = MaterialTheme.typography.bodyLarge) },
         // É um aviso, não uma ação — não merece um botão Filled (spec §7).
@@ -48,6 +54,9 @@ fun ErrorDialog(error: AppError, onDismiss: () -> Unit) {
 fun RemoveDialog(onConfirm: () -> Unit, onCancel: () -> Unit) {
     AlertDialog(
         onDismissRequest = onCancel,
+        containerColor = JohnTheme.dialogColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         icon = { Icon(JohnIcons.Delete, contentDescription = null) },
         title = { Text("Remover da lista?", style = MaterialTheme.typography.titleLarge) },
         text = { Text("O arquivo continua no celular.", style = MaterialTheme.typography.bodyLarge) },
@@ -63,6 +72,9 @@ fun PasswordDialog(wrongAttempt: Boolean, onSubmit: (String) -> Unit, onCancel: 
     var visible by rememberSaveable { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = onCancel,
+        containerColor = JohnTheme.dialogColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
         icon = { Icon(JohnIcons.Lock, contentDescription = null) },
         title = { Text("PDF protegido", style = MaterialTheme.typography.titleLarge) },
         text = {
@@ -84,6 +96,15 @@ fun PasswordDialog(wrongAttempt: Boolean, onSubmit: (String) -> Unit, onCancel: 
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = if (numeric) KeyboardType.NumberPassword else KeyboardType.Password,
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        cursorColor = MaterialTheme.colorScheme.primary,
                     ),
                     modifier = Modifier.fillMaxWidth().testTag("password_field"),
                 )

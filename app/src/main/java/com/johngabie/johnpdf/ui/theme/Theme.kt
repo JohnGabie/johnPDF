@@ -1,6 +1,10 @@
 package com.johngabie.johnpdf.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -194,6 +198,24 @@ fun johnNavigationBarItemColors(): NavigationBarItemColors = NavigationBarItemDe
     indicatorColor = JohnTheme.colors.tabIndicator,
     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+)
+
+/**
+ * O M3 pinta rótulo desabilitado com `onSurface` a 38% — 2,32:1 no claro, que o
+ * público-alvo (pessoas idosas) não consegue ler. Com 60% dá 3,96:1 no claro e
+ * 4,44:1 no escuro. Usar no "Abrir" do diálogo de senha.
+ */
+@Composable
+fun readableButtonColors(): ButtonColors = ButtonDefaults.buttonColors(
+    disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.60f),
+)
+
+/** Mesma regra de 60%, para as setas Anterior/Próxima do leitor. */
+@Composable
+fun readableIconButtonColors(): IconButtonColors = IconButtonDefaults.filledTonalIconButtonColors(
+    disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.60f),
 )
 
 // A troca para Atkinson Hyperlegible Next é um commit isolado (spec §2.2), fora deste plano.

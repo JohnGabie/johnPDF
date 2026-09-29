@@ -24,6 +24,7 @@ import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
 import com.johngabie.johnpdf.ui.theme.SpaceL
 import com.johngabie.johnpdf.ui.theme.SpaceM
 import com.johngabie.johnpdf.ui.theme.SpaceS
+import com.johngabie.johnpdf.ui.theme.readableButtonColors
 
 /** Ação principal — no máximo uma por tela/diálogo (spec D1 §3.2, invariante 1). */
 @Composable
@@ -36,6 +37,7 @@ fun PrimaryButton(
 ) = Button(
     onClick = onClick,
     enabled = enabled,
+    colors = readableButtonColors(),
     modifier = modifier
         .testTag("primary_button")
         .heightIn(min = PrimaryTouchTarget)
