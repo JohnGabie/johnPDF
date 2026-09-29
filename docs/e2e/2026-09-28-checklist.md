@@ -140,3 +140,46 @@ APKs por ABI também gerados (`app-arm64-v8a-release.apk`, `app-armeabi-v7a-rele
 **14/14 cenários PASS.** Nenhum bug de app encontrado; nenhuma alteração de código necessária.
 Todos os 101 testes automatizados (88 unitários + 13 instrumentados) passam. Build de release
 gerado com sucesso.
+
+---
+
+## Paleta Blue Lagoon (claro/escuro) — 2026-09-29
+
+Verificação visual no aparelho físico **moto g41 (Android 12)** depois das Tasks 1–8 do plano
+`docs/superpowers/plans/2026-09-29-paleta-cores-blue-lagoon.md`. Objetivo: confirmar que o lilás
+vazado do baseline M3 sumiu e que os pares medidos continuam legíveis em tela real.
+
+Comandos: `./gradlew :app:installDebug`, `adb shell cmd uimode night no|yes`,
+`adb exec-out screencap -p > docs/e2e/img/<nome>.png`.
+
+### Modo claro
+
+| # | Cenário | Captura | Resultado | Observação |
+|---|---|---|---|---|
+| 1 | Home/Recentes: header, lista e barra inferior | `blue-lagoon-claro-01-home.png` | **PASS** | Nenhum lilás. Fundo `#F7FAFC`, barra `#EBEFF2` lisa (sem `tonalElevation`). Pílula da aba em azul-ardósia `#365A6C` com ícone branco — claramente visível, contra os 1,12:1 do `secondaryContainer` padrão. |
+| 2 | Aba "Todos os PDFs" com lista e busca | `blue-lagoon-claro-02-busca.png` | **PASS** | Busca em pílula `surfaceContainerHigh`. Ícone de PDF no papel próprio (container rosa `#FDECEA`, ícone `#C62828`), não mais o `errorContainer` emprestado. Divisores da lista visíveis. |
+| 3 | Diálogo de senha com "Senha incorreta, tente de novo" | `blue-lagoon-claro-03-dialogo-senha.png` | **PASS** | Fundo do diálogo cinza-azulado `#E5EAEE` — **não lilás**, que era o pior sintoma. Erro em `#BA1A1A` (5,33:1 medido) e sempre acompanhado de texto, nunca só cor. Campo focado e "Abrir" habilitado em `#006494`. Com o campo vazio, "Abrir" desabilitado continua legível (alpha 0,60). |
+| 4 | Leitor | `blue-lagoon-claro-04-leitor.png` | **PASS** | Página branca, vão claro, barras sem tinta. "Anterior" desabilitado na página 1 dá para ler. |
+
+### Modo escuro
+
+| # | Cenário | Captura | Resultado | Observação |
+|---|---|---|---|---|
+| 5 | Home/Recentes no escuro | `blue-lagoon-escuro-05-home.png` | **PASS** | Nenhuma superfície branca fora da página do PDF. Ícones da barra de status **claros e visíveis** — confirma que trocar `SystemBarStyle.light` por `auto` (desfazendo o conserto F6) é seguro agora que existe `darkColorScheme`. |
+| 6 | Indicador da aba contra o fundo da NavigationBar | `blue-lagoon-escuro-06-aba.png` | **PASS** | É o par mais apertado do plano (**3,28:1**, mínimo 3:1). Em tela real a pílula `#5A7385` se distingue da barra `#1B2124` sem esforço. **Não foi preciso** aplicar o plano B da nota de risco 1 (clarear para `#5E7A8C`). |
+| 7 | "Remover da lista?" | `blue-lagoon-escuro-07-dialogo.png` | **PASS** | Fundo `#262B2F`: nem preto puro nem lilás. "Remover" em `#96C4E5` com texto escuro por cima. |
+| 8 | Leitor no escuro | `blue-lagoon-escuro-08-leitor.png` | **PASS** | Página **branca** (requisito do usuário) emoldurada por vão quase preto `#0A0F12` — 19,27:1, a moldura que o plano previu. "Anterior" desabilitado ainda legível. |
+
+### Arranque a frio em modo escuro
+
+`adb shell am force-stop` + `am start` com o sistema em escuro: **não pisca branco**. Amostragem de
+pixel do primeiro quadro deu `#202124` (janela inicial do sistema, escura) e do seguinte `#0F1417`,
+que é exatamente o `@color/window_background` de `values-night/`. O clarão branco do tema antigo
+(`Theme.Material.Light.NoActionBar`) acabou.
+
+### Resumo
+
+**8/8 cenários PASS**, mais o arranque a frio. Nenhum lilás encontrado em nenhuma tela, nos dois
+modos. Nenhum ajuste de cor foi necessário depois da verificação visual: os valores medidos por
+`tools/contrast.py` se sustentaram no aparelho, inclusive o par mais apertado (indicador de aba no
+escuro, 3,28:1). Bateria automatizada no momento da verificação: **163 testes JVM, 0 falhas**.
