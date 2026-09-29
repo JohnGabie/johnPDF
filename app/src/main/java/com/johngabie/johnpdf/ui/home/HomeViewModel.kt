@@ -10,6 +10,7 @@ import com.johngabie.johnpdf.data.PdfFile
 import com.johngabie.johnpdf.data.PdfLibrary
 import com.johngabie.johnpdf.data.RecentItem
 import com.johngabie.johnpdf.data.RecentsRepository
+import com.johngabie.johnpdf.data.isNoSpace
 import com.johngabie.johnpdf.ui.ReaderRoute
 import com.johngabie.johnpdf.util.filterByName
 import kotlin.coroutines.cancellation.CancellationException
@@ -81,17 +82,35 @@ class HomeViewModel(
     fun openRecent(item: RecentItem) = launchOpen { openPdf.openRecent(item) }
 
     fun removeRecent(item: RecentItem) {
-        viewModelScope.launch { recents.remove(item.path) }
+        viewModelScope.launch {
+            try {
+                recents.remove(item.path)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Swallow: mantém a lista como está.
+            }
+        }
     }
 
     private fun launchOpen(block: suspend () -> OpenOutcome) {
         viewModelScope.launch {
             _state.update { it.copy(busy = true) }
-            when (val outcome = block()) {
-                is OpenOutcome.Ready -> _navigation.send(ReaderRoute(outcome.path, outcome.name))
-                is OpenOutcome.Failed -> _state.update { it.copy(error = outcome.error) }
+            try {
+                val outcome = try {
+                    block()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    OpenOutcome.Failed(if (isNoSpace(e)) AppError.NO_SPACE else AppError.CORRUPTED)
+                }
+                when (outcome) {
+                    is OpenOutcome.Ready -> _navigation.send(ReaderRoute(outcome.path, outcome.name))
+                    is OpenOutcome.Failed -> _state.update { it.copy(error = outcome.error) }
+                }
+            } finally {
+                _state.update { it.copy(busy = false) }
             }
-            _state.update { it.copy(busy = false) }
         }
     }
 }

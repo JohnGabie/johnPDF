@@ -38,7 +38,13 @@ class HomeViewModelTest {
         PdfFile("Receita médica.pdf", "/sdcard/Documents/r.pdf", Origin.DOCUMENTS, 1L),
     )
     private var importResult: ImportResult = ImportResult.Failed
-    private fun vm() = HomeViewModel(recents, library, OpenPdfUseCase({ importResult }, recents, { 100L }), { access })
+    private var importError: Throwable? = null
+    private fun vm() = HomeViewModel(
+        recents,
+        library,
+        OpenPdfUseCase({ importError?.let { throw it } ?: importResult }, recents, { 100L }),
+        { access },
+    )
 
     @Test fun refresh_without_access_does_not_query() {
         val vm = vm()
@@ -105,6 +111,39 @@ class HomeViewModelTest {
         val vm = vm()
         vm.removeRecent(vm.state.value.recents.single())
         assertEquals(emptyList<RecentItem>(), vm.state.value.recents)
+    }
+
+    @Test fun open_uri_importer_crash_is_caught_as_corrupted() {
+        importError = IllegalArgumentException("boom")
+        val vm = vm()
+        vm.openUri(Uri.parse("content://x/1"))
+        assertEquals(AppError.CORRUPTED, vm.state.value.error)
+        assertFalse(vm.state.value.busy)
+    }
+
+    @Test fun open_uri_no_space_io_exception_is_caught_as_no_space() {
+        importError = java.io.IOException("No space left on device")
+        val vm = vm()
+        vm.openUri(Uri.parse("content://x/1"))
+        assertEquals(AppError.NO_SPACE, vm.state.value.error)
+        assertFalse(vm.state.value.busy)
+    }
+
+    @Test fun remove_recent_failure_is_swallowed_without_crashing() {
+        // Um storeFile que na verdade é um diretório faz RecentsRepository.write() lançar
+        // ao tentar escrever nele — reproduz uma falha real de I/O durante a remoção.
+        val brokenStore = tmp.newFolder("broken-recents.json")
+        val brokenRecents = RecentsRepository(brokenStore, Dispatchers.Unconfined)
+        val vm = HomeViewModel(brokenRecents, library, OpenPdfUseCase({ importResult }, brokenRecents, { 100L }), { access })
+        var uncaught: Throwable? = null
+        val previous = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { _, e -> uncaught = e }
+        try {
+            vm.removeRecent(RecentItem("a.pdf", Origin.OTHER, "/a.pdf", 1L, imported = false))
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(previous)
+        }
+        assertEquals(null, uncaught)
     }
 
     @Test fun select_tab() {
