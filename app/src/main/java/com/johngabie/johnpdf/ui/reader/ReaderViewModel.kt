@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.johngabie.johnpdf.data.AppError
 import com.johngabie.johnpdf.data.RotationLockSetting
+import com.johngabie.johnpdf.engine.MAX_RENDER_WIDTH_PX
 import com.johngabie.johnpdf.engine.OpenResult
 import com.johngabie.johnpdf.engine.PageSize
 import com.johngabie.johnpdf.engine.PdfEngine
@@ -85,7 +86,7 @@ class ReaderViewModel(
     suspend fun renderPage(index: Int, widthPx: Int): Bitmap? = try {
         engine.render(index, widthPx)
     } catch (e: OutOfMemoryError) {
-        tryRender(index, widthPx / 2)
+        tryRender(index, minOf(widthPx, MAX_RENDER_WIDTH_PX) / 2)
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {

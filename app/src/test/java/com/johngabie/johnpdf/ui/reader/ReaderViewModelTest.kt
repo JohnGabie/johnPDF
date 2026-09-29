@@ -81,6 +81,12 @@ class ReaderViewModelTest {
         assertEquals(listOf(0 to 800, 0 to 400), engine.renderRequests)
     }
 
+    @Test fun render_oom_retry_halves_the_clamped_width_not_the_requested_one() = runTest {
+        engine.renderFailures += OutOfMemoryError("fake")
+        vm().renderPage(0, 5000)
+        assertEquals(listOf(0 to 5000, 0 to 1024), engine.renderRequests)
+    }
+
     @Test fun render_oom_twice_returns_null() = runTest {
         engine.renderFailures += OutOfMemoryError("1"); engine.renderFailures += OutOfMemoryError("2")
         assertNull(vm().renderPage(0, 800))
