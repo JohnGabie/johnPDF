@@ -11,8 +11,6 @@ dialpad               Dialpad
 error                 Error
 folder                Folder
 folder_open           FolderOpen
-history               History
-history               HistoryFilled        fill
 keyboard              Keyboard
 keyboard_arrow_down   KeyboardArrowDown
 keyboard_arrow_up     KeyboardArrowUp
@@ -20,6 +18,10 @@ library_books         LibraryBooks
 library_books         LibraryBooksFilled   fill
 lock                  Lock
 picture_as_pdf        PictureAsPdf
+# `history` não entra: upstream publica history_fill1_24px.svg idêntico ao
+# contorno, o que deixaria o estado selecionado da bottom nav indistinguível.
+schedule              Schedule
+schedule              ScheduleFilled       fill
 screen_lock_rotation  ScreenLockRotation
 screen_rotation       ScreenRotation
 search                Search

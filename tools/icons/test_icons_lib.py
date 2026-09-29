@@ -70,10 +70,81 @@ class IconsTxtRealTest(unittest.TestCase):
             "só ArrowBack espelha em RTL",
         )
         self.assertEqual(
-            ["HistoryFilled", "LibraryBooksFilled"],
+            ["LibraryBooksFilled", "ScheduleFilled"],
             sorted(i.kotlin for i in icons if i.fill),
         )
         self.assertEqual(20, len({i.upstream for i in icons}), "20 nomes upstream distintos")
+
+
+SVG_OK = (
+    '<svg xmlns="http://www.w3.org/2000/svg" height="24px" '
+    'viewBox="0 -960 960 960" width="24px" fill="#000000">'
+    '<path d="M480-480 120-120Z"/></svg>'
+)
+
+
+class ExtractPathTest(unittest.TestCase):
+    def test_extrai_o_d_sem_normalizar(self):
+        d, even_odd = icons_lib.extract_path(SVG_OK, "ok.svg")
+        self.assertEqual("M480-480 120-120Z", d)
+        self.assertFalse(even_odd)
+
+    def test_detecta_fill_rule_evenodd(self):
+        svg = SVG_OK.replace('<path d=', '<path fill-rule="evenodd" d=')
+        _, even_odd = icons_lib.extract_path(svg, "ok.svg")
+        self.assertTrue(even_odd)
+
+    def test_recusa_viewbox_diferente(self):
+        svg = SVG_OK.replace('viewBox="0 -960 960 960"', 'viewBox="0 0 24 24"')
+        with self.assertRaises(ValueError) as cm:
+            icons_lib.extract_path(svg, "ruim.svg")
+        self.assertIn("ruim.svg", str(cm.exception))
+        self.assertIn("viewBox", str(cm.exception))
+
+    def test_recusa_mais_de_um_path(self):
+        svg = SVG_OK.replace("</svg>", '<path d="M0 0Z"/></svg>')
+        with self.assertRaises(ValueError) as cm:
+            icons_lib.extract_path(svg, "dois.svg")
+        self.assertIn("dois.svg", str(cm.exception))
+
+    def test_recusa_zero_paths(self):
+        svg = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"></svg>'
+        with self.assertRaises(ValueError):
+            icons_lib.extract_path(svg, "vazio.svg")
+
+    def test_recusa_d_vazio(self):
+        svg = SVG_OK.replace('d="M480-480 120-120Z"', 'd="  "')
+        with self.assertRaises(ValueError) as cm:
+            icons_lib.extract_path(svg, "sem-d.svg")
+        self.assertIn("sem-d.svg", str(cm.exception))
+
+    def test_recusa_tamanho_diferente_de_24(self):
+        svg = SVG_OK.replace('height="24px"', 'height="48px"')
+        with self.assertRaises(ValueError) as cm:
+            icons_lib.extract_path(svg, "grande.svg")
+        self.assertIn("grande.svg", str(cm.exception))
+
+    def test_recusa_html_salvo_como_svg(self):
+        with self.assertRaises(ValueError):
+            icons_lib.extract_path("<html><body>404</body></html>", "404.svg")
+
+
+class LoadIconsTest(unittest.TestCase):
+    def test_carrega_os_22_icones_versionados_com_d_nao_vazio(self):
+        icons = icons_lib.load_icons()
+        self.assertEqual(22, len(icons))
+        for icon in icons:
+            with self.subTest(icon.kotlin):
+                self.assertTrue(icon.d.strip(), f"{icon.kotlin} ficou com d vazio")
+                self.assertGreater(len(icon.d), 20, f"{icon.kotlin} tem d suspeito de truncado")
+
+    def test_variantes_preenchidas_diferem_do_contorno(self):
+        # `history` foi trocado por `schedule`: upstream publica
+        # history_fill1_24px.svg byte a byte igual ao contorno, então o estado
+        # selecionado da bottom nav ficaria idêntico ao não selecionado.
+        by_name = {i.kotlin: i for i in icons_lib.load_icons()}
+        self.assertNotEqual(by_name["Schedule"].d, by_name["ScheduleFilled"].d)
+        self.assertNotEqual(by_name["LibraryBooks"].d, by_name["LibraryBooksFilled"].d)
 
 
 if __name__ == "__main__":
