@@ -5,6 +5,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,21 +49,24 @@ private val Colors = lightColorScheme(
     error = Color(0xFFB00020),
 )
 
+// A troca para Atkinson Hyperlegible Next é um commit isolado (spec §2.2), fora deste plano.
+internal val JohnFontFamily = FontFamily.Default
+
 private val Base = Typography()
-internal val BigTypography = Typography(
-    headlineMedium = Base.headlineMedium.copy(fontSize = 30.sp, fontWeight = FontWeight.Bold),
-    titleLarge = Base.titleLarge.copy(fontSize = 24.sp, fontWeight = FontWeight.SemiBold),
-    titleMedium = Base.titleMedium.copy(fontSize = 22.sp, fontWeight = FontWeight.SemiBold),
-    titleSmall = Base.titleSmall.copy(fontSize = 20.sp, fontWeight = FontWeight.SemiBold),
-    bodyLarge = Base.bodyLarge.copy(fontSize = 20.sp, lineHeight = 28.sp),
-    bodyMedium = Base.bodyMedium.copy(fontSize = 20.sp, lineHeight = 28.sp),
-    bodySmall = Base.bodySmall.copy(fontSize = 20.sp, lineHeight = 28.sp),
-    labelLarge = Base.labelLarge.copy(fontSize = 20.sp, fontWeight = FontWeight.SemiBold),
-    labelMedium = Base.labelMedium.copy(fontSize = 20.sp),
-    labelSmall = Base.labelSmall.copy(fontSize = 20.sp),
+internal val JohnTypography = Typography(
+    headlineMedium = Base.headlineMedium.copy(fontFamily = JohnFontFamily, fontSize = 24.sp, lineHeight = 32.sp, fontWeight = FontWeight.Bold),
+    titleLarge = Base.titleLarge.copy(fontFamily = JohnFontFamily, fontSize = 22.sp, lineHeight = 28.sp, fontWeight = FontWeight.SemiBold),
+    titleMedium = Base.titleMedium.copy(fontFamily = JohnFontFamily, fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.SemiBold),
+    titleSmall = Base.titleSmall.copy(fontFamily = JohnFontFamily, fontSize = 16.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold),
+    bodyLarge = Base.bodyLarge.copy(fontFamily = JohnFontFamily, fontSize = 18.sp, lineHeight = 26.sp),
+    bodyMedium = Base.bodyMedium.copy(fontFamily = JohnFontFamily, fontSize = 16.sp, lineHeight = 24.sp),
+    bodySmall = Base.bodySmall.copy(fontFamily = JohnFontFamily, fontSize = 16.sp, lineHeight = 20.sp),
+    labelLarge = Base.labelLarge.copy(fontFamily = JohnFontFamily, fontSize = 16.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold),
+    labelMedium = Base.labelMedium.copy(fontFamily = JohnFontFamily, fontSize = 16.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium),
+    labelSmall = Base.labelSmall.copy(fontFamily = JohnFontFamily, fontSize = 16.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium),
 )
 
 @Composable
 fun JohnPdfTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = Colors, typography = BigTypography, content = content)
+    MaterialTheme(colorScheme = Colors, typography = JohnTypography, content = content)
 }
