@@ -12,3 +12,4 @@ captures/
 .superpowers/
 keystore.properties
 .venv-tools/
+__pycache__/
