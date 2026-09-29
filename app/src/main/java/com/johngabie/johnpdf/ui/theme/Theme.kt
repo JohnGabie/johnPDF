@@ -14,8 +14,14 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -242,9 +248,56 @@ internal val DarkSchemeForTest = DarkColors
 internal val LightJohnForTest = LightJohnColors
 internal val DarkJohnForTest = DarkJohnColors
 
+/**
+ * Segura o modo escolhido e sabe trocá-lo.
+ *
+ * `mode` é estado do Compose lido dentro de [JohnPdfTheme]: trocar repinta a árvore inteira
+ * no mesmo frame, sem recriar a Activity — é isso que faz a troca parecer instantânea.
+ */
+@Stable
+class ThemeController internal constructor(
+    initial: ThemeMode,
+    private val persist: (ThemeMode) -> Unit,
+) {
+    var mode: ThemeMode by mutableStateOf(initial)
+        private set
+
+    /** Avança um passo no ciclo do botão e já salva. */
+    fun cycle() {
+        mode = mode.next()
+        persist(mode)
+    }
+}
+
+/** Lê o modo salvo uma vez e devolve o controlador que a tela usa para trocar. */
 @Composable
-fun JohnPdfTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalJohnColors provides if (dark) DarkJohnColors else LightJohnColors) {
+fun rememberThemeController(): ThemeController {
+    val context = LocalContext.current
+    return remember(context) {
+        val prefs = ThemePreferences(context)
+        ThemeController(prefs.read(), prefs::write)
+    }
+}
+
+/** Como a Home alcança o controlador sem ter de recebê-lo por parâmetro em cada tela. */
+val LocalThemeController = staticCompositionLocalOf<ThemeController> {
+    error("LocalThemeController só existe dentro de JohnPdfTheme")
+}
+
+/**
+ * `dark` continua como parâmetro para os testes forçarem um esquema. O padrão é o modo
+ * escolhido no app — que só consulta o sistema quando está em [ThemeMode.SYSTEM].
+ */
+@Composable
+fun JohnPdfTheme(
+    controller: ThemeController = rememberThemeController(),
+    dark: Boolean = controller.mode.resolveDark(isSystemInDarkTheme()),
+    content: @Composable () -> Unit,
+) {
+    CompositionLocalProvider(
+        LocalJohnColors provides if (dark) DarkJohnColors else LightJohnColors,
+        LocalThemeController provides controller,
+    ) {
         MaterialTheme(
             colorScheme = if (dark) DarkColors else LightColors,
             typography = JohnTypography,

@@ -7,11 +7,15 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.johngabie.johnpdf.ui.AppNavHost
 import com.johngabie.johnpdf.ui.home.HomeViewModel
 import com.johngabie.johnpdf.ui.theme.JohnPdfTheme
+import com.johngabie.johnpdf.ui.theme.rememberThemeController
 
 class MainActivity : ComponentActivity() {
     private val container: AppContainer get() = (application as JohnPdfApp).container
@@ -26,24 +30,40 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // auto(): ícones escuros no claro e claros no escuro, acompanhando o sistema.
-        // Era light() enquanto não existia darkColorScheme (conserto F6); agora que
-        // existe, light() seria o bug — ícones escuros sobre surface #0F1417 somem.
-        // Os dois argumentos são os scrims usados quando falta contraste; TRANSPARENT
-        // nos dois mantém o edge-to-edge real.
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
-                android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT,
-            ),
-            navigationBarStyle = SystemBarStyle.auto(
-                android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT,
-            ),
-        )
         // Só na primeira criação: após rotação o intent é o mesmo e não deve reimportar.
         if (savedInstanceState == null) handleViewIntent(intent)
-        setContent { JohnPdfTheme { AppNavHost(homeViewModel, container) } }
+        setContent {
+            val controller = rememberThemeController()
+            val dark = controller.mode.resolveDark(isSystemInDarkTheme())
+            ApplySystemBarIcons(dark)
+            JohnPdfTheme(controller) { AppNavHost(homeViewModel, container) }
+        }
+    }
+
+    /**
+     * Os ícones da barra de status/navegação não são desenhados pelo Compose — quem decide é
+     * a janela. Por isso o enableEdgeToEdge mora aqui dentro, reagindo ao modo escolhido: sem
+     * isso, trocar para escuro manualmente num celular claro deixaria ícones escuros sobre
+     * barras escuras até reabrir o app.
+     *
+     * Antes era `SystemBarStyle.light(...)` fixo, que forçava ícones escuros sempre. Fazia
+     * sentido enquanto não havia esquema escuro; agora inverteria o problema.
+     */
+    @Composable
+    private fun ApplySystemBarIcons(dark: Boolean) {
+        DisposableEffect(dark) {
+            enableEdgeToEdge(
+                statusBarStyle = SystemBarStyle.auto(
+                    android.graphics.Color.TRANSPARENT,
+                    android.graphics.Color.TRANSPARENT,
+                ) { dark },
+                navigationBarStyle = SystemBarStyle.auto(
+                    android.graphics.Color.TRANSPARENT,
+                    android.graphics.Color.TRANSPARENT,
+                ) { dark },
+            )
+            onDispose { }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

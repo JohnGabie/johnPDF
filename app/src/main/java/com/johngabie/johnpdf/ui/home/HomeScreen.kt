@@ -45,13 +45,17 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +68,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -80,7 +86,9 @@ import com.johngabie.johnpdf.ui.common.SecondaryButton
 import com.johngabie.johnpdf.ui.icons.JohnIcons
 import com.johngabie.johnpdf.ui.theme.JohnTheme
 import com.johngabie.johnpdf.ui.theme.ListItemMinHeight
+import com.johngabie.johnpdf.ui.theme.LocalThemeController
 import com.johngabie.johnpdf.ui.theme.MaxActionWidth
+import com.johngabie.johnpdf.ui.theme.ThemeMode
 import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
 import com.johngabie.johnpdf.ui.theme.SpaceL
 import com.johngabie.johnpdf.ui.theme.SpaceS
@@ -205,6 +213,7 @@ private fun HomeTopBar(onOpenPicker: () -> Unit) {
             )
         },
         actions = {
+            ThemeSwitchAction()
             SecondaryButton(
                 text = "Abrir PDF",
                 onClick = onOpenPicker,
@@ -218,6 +227,44 @@ private fun HomeTopBar(onOpenPicker: () -> Unit) {
             scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
     )
+}
+
+/**
+ * Claro / escuro / seguir o sistema, num botão só.
+ *
+ * Um botão em vez de um menu porque são três opções e a Home é tela de leitura, não de
+ * ajustes — e porque o ciclo fecha, então dá para voltar ao automático sem sair daqui.
+ *
+ * O ícone mostra o modo **atual**, não o próximo: é o que o usuário procura quando quer
+ * conferir em que modo está. Mesma divisão do travar-rotação do leitor (spec §6.2): o
+ * `contentDescription` nomeia a ação, o `stateDescription` é o que o TalkBack anuncia
+ * depois do toque.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ThemeSwitchAction() {
+    val controller = LocalThemeController.current
+    val mode = controller.mode
+    val (icon, estado) = when (mode) {
+        ThemeMode.SYSTEM -> JohnIcons.BrightnessAuto to "Seguindo o sistema"
+        ThemeMode.LIGHT -> JohnIcons.LightMode to "Tema claro"
+        ThemeMode.DARK -> JohnIcons.DarkMode to "Tema escuro"
+    }
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = { PlainTooltip { Text(estado) } },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(
+            onClick = controller::cycle,
+            modifier = Modifier
+                .size(48.dp)
+                .semantics { stateDescription = estado }
+                .testTag("theme_switch"),
+        ) {
+            Icon(icon, contentDescription = "Trocar o tema", modifier = Modifier.size(24.dp))
+        }
+    }
 }
 
 /**
