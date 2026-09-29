@@ -177,20 +177,6 @@ fun ReaderContent(
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        bottomBar = {
-            AnimatedVisibility(
-                showBars && status is ReaderStatus.Ready,
-                enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
-            ) {
-                ReaderBottomBar(
-                    current = state.currentPage,
-                    total = state.pageCount,
-                    onPrevious = { scope.launch { listState.animateScrollToItem((state.currentPage - 1).coerceAtLeast(0)) } },
-                    onNext = { scope.launch { listState.animateScrollToItem((state.currentPage + 1).coerceAtMost(state.pageCount - 1)) } },
-                )
-            }
-        },
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {
             when (status) {
@@ -206,7 +192,20 @@ fun ReaderContent(
                 is ReaderStatus.Failed -> ErrorDialog(status.error, onDismiss = onBack)
                 is ReaderStatus.Ready -> {
                     TrackVisiblePage(listState, onPageVisible)
-                    PageList(status.pageSizes, state.zoom, listState, onZoomChange, onDoubleTap, onSingleTap = { barsVisible = !barsVisible }, renderPage)
+                    PageList(
+                        pageSizes = status.pageSizes,
+                        zoom = state.zoom,
+                        listState = listState,
+                        onZoomChange = onZoomChange,
+                        onDoubleTap = onDoubleTap,
+                        onSingleTap = { barsVisible = !barsVisible },
+                        renderPage = renderPage,
+                        currentPage = state.currentPage,
+                        totalPages = state.pageCount,
+                        barsVisible = showBars,
+                        onPrevious = { scope.launch { listState.animateScrollToItem((state.currentPage - 1).coerceAtLeast(0)) } },
+                        onNext = { scope.launch { listState.animateScrollToItem((state.currentPage + 1).coerceAtMost(state.pageCount - 1)) } },
+                    )
                 }
             }
         }
@@ -298,37 +297,6 @@ private fun RotationLockAction(locked: Boolean, onToggle: () -> Unit) {
     }
 }
 
-/**
- * Faixa única: rótulo "Página X de Y" à esquerda e as setas empilhadas à direita, 56dp cada
- * com 8dp de folga. Empilhadas (e não lado a lado) porque ▲/▼ casam com o sentido da rolagem.
- */
-@Composable
-private fun ReaderBottomBar(current: Int, total: Int, onPrevious: () -> Unit, onNext: () -> Unit) {
-    // Sem tonalElevation: no escuro ele tinge a superfície com primary e reintroduz
-    // cor vazada. O nível de superfície é escolhido explicitamente.
-    Surface(color = JohnTheme.barColor, contentColor = MaterialTheme.colorScheme.onSurface) {
-        Row(
-            Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = SpaceL, vertical = SpaceS),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(pageLabel(current, total), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-            Column(verticalArrangement = Arrangement.spacedBy(MinGap)) {
-                FilledTonalIconButton(
-                    onClick = onPrevious,
-                    enabled = current > 0,
-                    colors = readableIconButtonColors(),
-                    modifier = Modifier.size(PrimaryTouchTarget),
-                ) { Icon(JohnIcons.KeyboardArrowUp, contentDescription = "Página anterior") }
-                FilledTonalIconButton(
-                    onClick = onNext,
-                    enabled = current < total - 1,
-                    colors = readableIconButtonColors(),
-                    modifier = Modifier.size(PrimaryTouchTarget),
-                ) { Icon(JohnIcons.KeyboardArrowDown, contentDescription = "Próxima página") }
-            }
-        }
-    }
-}
 
 @Composable
 private fun PageList(
@@ -339,6 +307,11 @@ private fun PageList(
     onDoubleTap: () -> Unit,
     onSingleTap: () -> Unit,
     renderPage: suspend (Int, Int) -> Bitmap?,
+    currentPage: Int,
+    totalPages: Int,
+    barsVisible: Boolean,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
 ) {
     val currentSingleTap by rememberUpdatedState(onSingleTap)
     val currentDoubleTap by rememberUpdatedState(onDoubleTap)
@@ -367,6 +340,45 @@ private fun PageList(
             ) {
                 itemsIndexed(pageSizes) { index, size -> PdfPage(index, size, widthPx, renderPage) }
             }
+        }
+
+        // Setas flutuantes no canto direito
+        AnimatedVisibility(
+            barsVisible,
+            modifier = Modifier.align(Alignment.BottomEnd).padding(SpaceL),
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(SpaceS)) {
+                FilledTonalIconButton(
+                    onClick = onPrevious,
+                    enabled = currentPage > 0,
+                    modifier = Modifier.size(PrimaryTouchTarget),
+                ) {
+                    Icon(JohnIcons.KeyboardArrowUp, contentDescription = "Página anterior")
+                }
+                FilledTonalIconButton(
+                    onClick = onNext,
+                    enabled = currentPage < totalPages - 1,
+                    modifier = Modifier.size(PrimaryTouchTarget),
+                ) {
+                    Icon(JohnIcons.KeyboardArrowDown, contentDescription = "Próxima página")
+                }
+            }
+        }
+
+        // Número de páginas sutil no canto inferior esquerdo
+        AnimatedVisibility(
+            barsVisible,
+            modifier = Modifier.align(Alignment.BottomStart).padding(SpaceL + 8.dp, SpaceL),
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Text(
+                pageLabel(currentPage, totalPages),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            )
         }
     }
 }
