@@ -16,7 +16,7 @@
 - `minSdk = 24`. `compileSdk = targetSdk = 36` (o SDK tem 36 e 37 instalados; ficamos no 36 porque o emulador é API 36 e o AGP 8.10 fixado não compila o 37).
 - Ambiente: `source ~/.bashrc` antes de qualquer comando (JDK 17, SDK, Gradle 8.14.5 global). O emulador `johnpdf_test` (API 36, headless) come ~3,3 GB: **não** rode dois builds Gradle ao mesmo tempo.
 - Todo texto de UI em **pt-BR**, exatamente como escrito neste plano.
-- Texto com no mínimo **20sp**; alvos de toque com no mínimo **64dp** (`MinTouchTarget`); ícone sempre acompanhado de texto; nenhum menu ⋮.
+- Texto com no mínimo **16sp**, com hierarquia decrescente (`titleLarge > titleMedium ≥ bodyLarge > bodyMedium ≥ labelLarge`); alvos de toque com no mínimo **48dp** (piso M3) e **56dp** nas ações frequentes (`PrimaryTouchTarget`, ver `docs/superpowers/specs/2026-09-29-design-d1-sistema-visual.md`); ícone sozinho só nos casos de convenção universal, com `contentDescription`; nenhum menu ⋮.
 - **Nenhuma** permissão `INTERNET`, SDK de anúncios ou analytics.
 - Somente `engine/MuPdfEngine.kt` importa `com.artifex.mupdf.*`, e toda chamada ao MuPDF roda na thread única dele.
 - Largura máxima de renderização: `MAX_RENDER_WIDTH_PX = 2048`.
@@ -2623,6 +2623,14 @@ git commit -m "feat: tema de alto contraste, botão grande e diálogos (erro, co
     onDoubleTap: () -> Unit, onToggleRotation: () -> Unit, onSubmitPassword: (String) -> Unit, renderPage: suspend (Int, Int) -> Bitmap?)
 ```
 - Layout da barra inferior (duas linhas, para caber em 360dp com 20sp): linha 1 = `Página X de N` + botão de rotação; linha 2 = `[⬆ Anterior] [⬇ Próxima]`, cada um com metade da largura. Rótulos da rotação: `"🔓 Gira sozinha"` (livre) e `"🔒 Travada"` (travada).
+
+> **Atualizado por D1 (2026-09-29):** o layout da barra inferior mudou para uma
+> única linha (rótulo "Página X de Y" + setas Anterior/Próxima empilhadas à
+> direita, 56dp cada, com `contentDescription` no lugar dos emojis) e a rotação
+> foi para a barra superior como `IconToggleButton` (`RotationLockAction`), com
+> Snackbar confirmando a troca. `BigButton`, `MinTouchTarget` e `PageGapColor`
+> deixaram de existir. Ver
+> `docs/superpowers/specs/2026-09-29-design-d1-sistema-visual.md` §5.2.
 
 - [ ] **Step 1: Escrever os testes que falham**
 

@@ -97,9 +97,13 @@ interface PdfEngine {
 
 ## 4. Telas e comportamento
 
-**Padrões visuais:** texto com no mínimo 20sp, alvos de toque com no mínimo
-64dp, alto contraste (fundo claro, texto quase preto), ícone sempre acompanhado
-de texto e nada escondido atrás de menus ⋮.
+**Padrões visuais** (superseded por `docs/superpowers/specs/2026-09-29-design-d1-sistema-visual.md`):
+texto com no mínimo 16sp e hierarquia de tamanho (`titleLarge > titleMedium ≥
+bodyLarge > bodyMedium ≥ labelLarge`); alvos de toque com no mínimo 48dp
+(piso M3) e 56dp nas ações frequentes; alto contraste (fundo claro, texto quase
+preto); ícone sozinho só nos quatro casos de convenção universal (voltar,
+travar rotação, limpar busca, ação com rótulo redundante ao lado) — qualquer
+outra ação leva texto; nada escondido atrás de menus ⋮.
 
 ### 4.1 Home
 
