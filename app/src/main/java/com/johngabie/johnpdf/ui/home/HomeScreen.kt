@@ -13,21 +13,30 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -35,6 +44,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +53,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -55,6 +68,14 @@ import com.johngabie.johnpdf.data.StorageAccess
 import com.johngabie.johnpdf.ui.common.BigButton
 import com.johngabie.johnpdf.ui.common.ConfirmDialog
 import com.johngabie.johnpdf.ui.common.ErrorDialog
+import com.johngabie.johnpdf.ui.common.PrimaryButton
+import com.johngabie.johnpdf.ui.common.SecondaryButton
+import com.johngabie.johnpdf.ui.icons.JohnIcons
+import com.johngabie.johnpdf.ui.theme.MaxActionWidth
+import com.johngabie.johnpdf.ui.theme.SpaceL
+import com.johngabie.johnpdf.ui.theme.SpaceS
+import com.johngabie.johnpdf.ui.theme.SpaceXl
+import com.johngabie.johnpdf.ui.theme.SpaceXxl
 import com.johngabie.johnpdf.util.friendlyDate
 
 private tailrec fun Context.findActivity(): Activity? = when (this) {
@@ -127,7 +148,7 @@ fun HomeContent(
     var pendingRemoval by remember { mutableStateOf<RecentItem?>(null) }
 
     Scaffold(
-        topBar = { HomeHeader(onOpenPicker) },
+        topBar = { HomeTopBar(onOpenPicker) },
         bottomBar = { HomeBottomBar(state.tab, onSelectTab) },
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {
@@ -151,33 +172,70 @@ fun HomeContent(
     state.error?.let { ErrorDialog(it, onDismissError) }
 }
 
+/**
+ * Ação única "Abrir PDF" nas `actions` do `TopAppBar` — sem FAB (decisão 3 do usuário, spec §1.1a).
+ * 48dp é o piso de toque do M3: o header é uma ação de apoio, não a ação principal da tela.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeHeader(onOpenPicker: () -> Unit) {
-    Surface(tonalElevation = 3.dp) {
-        Row(
-            Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text("johnPDF", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
-            BigButton("📂 Abrir", onOpenPicker)
-        }
-    }
+private fun HomeTopBar(onOpenPicker: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(
+                "johnPDF",
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        actions = {
+            SecondaryButton(
+                text = "Abrir PDF",
+                onClick = onOpenPicker,
+                icon = JohnIcons.FolderOpen,
+                height = 48.dp,
+                modifier = Modifier.padding(end = SpaceS).testTag("open_pdf_header"),
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
+    )
 }
 
+/**
+ * `contentDescription = null` é intencional: o rótulo textual ao lado já nomeia o item e
+ * descrever o ícone duplicaria o anúncio do TalkBack (spec §8.1).
+ */
 @Composable
 private fun HomeBottomBar(tab: HomeTab, onSelectTab: (HomeTab) -> Unit) {
-    NavigationBar {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
         NavigationBarItem(
             selected = tab == HomeTab.RECENTS,
             onClick = { onSelectTab(HomeTab.RECENTS) },
-            icon = { Text("🕘", fontSize = 28.sp) },
+            icon = {
+                Icon(
+                    if (tab == HomeTab.RECENTS) JohnIcons.ScheduleFilled else JohnIcons.Schedule,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp).testTag("nav_icon_recents"),
+                )
+            },
             label = { Text("Recentes", style = MaterialTheme.typography.labelMedium) },
+            alwaysShowLabel = true,
         )
         NavigationBarItem(
             selected = tab == HomeTab.ALL,
             onClick = { onSelectTab(HomeTab.ALL) },
-            icon = { Text("📚", fontSize = 28.sp) },
+            icon = {
+                Icon(
+                    if (tab == HomeTab.ALL) JohnIcons.LibraryBooksFilled else JohnIcons.LibraryBooks,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp).testTag("nav_icon_all"),
+                )
+            },
             label = { Text("Todos os PDFs", style = MaterialTheme.typography.labelMedium) },
+            alwaysShowLabel = true,
         )
     }
 }
@@ -237,23 +295,40 @@ private fun AllPdfsTab(
     }
 }
 
+/** `verticalScroll` é necessário: com fontScale 2.0 em paisagem o bloco estoura a altura (spec §5.5). */
 @Composable
 private fun PermissionContent(onRequestPermission: () -> Unit) {
     Column(
-        Modifier.fillMaxSize().padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
+        Modifier.fillMaxSize().padding(SpaceXl).verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Box(
+            Modifier.size(72.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                JohnIcons.Folder,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(36.dp),
+            )
+        }
+        Spacer(Modifier.height(SpaceXl))
         Text(
             "Para mostrar os PDFs do celular, o johnPDF precisa de permissão.",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
+            modifier = Modifier.widthIn(max = MaxActionWidth),
         )
+        Spacer(Modifier.height(SpaceXl))
         Text(
-            "1. Toque em Permitir\n2. Ative a opção do johnPDF\n3. Volte para o app",
+            "1. Toque em Permitir acesso\n2. Ative a opção do johnPDF\n3. Volte para o app",
             style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.widthIn(max = MaxActionWidth),
         )
-        BigButton("Permitir", onRequestPermission, Modifier.fillMaxWidth())
+        Spacer(Modifier.height(SpaceXl))
+        PrimaryButton("Permitir acesso", onRequestPermission, Modifier.fillMaxWidth())
     }
 }
 
