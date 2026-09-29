@@ -1,0 +1,289 @@
+09-29 04:38:26.979  1616  6072 I ActivityManager: Force stopping com.johngabie.johnpdf appid=10303 user=0: from pid 7457 and uid 2000
+09-29 04:38:31.925  1616  2281 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.johngabie.johnpdf/.MainActivity} from uid 2000
+09-29 04:38:31.990  1616  1649 I ActivityManager: Start proc 7486:com.johngabie.johnpdf/u0a303 for pre-top-activity {com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:38:32.026  1616  1641 I WindowManager: SURFACE SHOW Surface(name=Splash Screen com.johngabie.johnpdf)/@0x6afd54a on display:0
+09-29 04:38:32.335  1616  3894 V WindowManager: Changing focus of displayId=0 to Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:38:32.453  1616  1641 I LaunchCheckinHandler: MotoDisplayed com.johngabie.johnpdf/.MainActivity,cp,ca,488
+09-29 04:38:32.454  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x1ea0d20 on display:0
+09-29 04:38:32.933  1616  1641 I WindowManager: SURFACE hide Surface(name=Splash Screen com.johngabie.johnpdf)/@0x6afd54a on display:0
+09-29 04:39:12.186  1616  1629 I ActivityTaskManager: START u0 {act=android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION dat=package:com.johngabie.johnpdf cmp=com.android.settings/.Settings$AppManageExternalStorageActivity} from uid 10303
+09-29 04:39:12.221  1616  1629 V WindowManager: Changing focus of displayId=0 to null from Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:39:12.880  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x1ea0d20 on display:0
+09-29 04:39:35.575  1616  1768 V WindowManager: Changing focus of displayId=0 to Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:39:35.642  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x3c8e74f on display:0
+09-29 04:39:48.527  1616  6071 V WindowManager: Changing focus of displayId=0 to Window{f317f8 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:39:48.594  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0xcdf5b0e on display:0
+09-29 04:39:50.373  1616  5920 V WindowManager: Changing focus of displayId=0 to Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{f317f8 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity EXITING}
+09-29 04:39:50.545  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0xcdf5b0e on display:0
+09-29 04:39:54.730  1616  5920 V WindowManager: Changing focus of displayId=0 to null from Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:39:55.156  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x3c8e74f on display:0
+09-29 04:39:57.481  1616  6071 V WindowManager: Changing focus of displayId=0 to Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:39:57.515  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x5ca8638 on display:0
+09-29 04:40:22.726  1616  2960 I ActivityTaskManager: moveTaskToBack: Task{5b368fd #59 type=standard A=10303:com.johngabie.johnpdf U=0 visible=true mode=fullscreen translucent=false sz=1}
+09-29 04:40:22.741  1616  2960 V WindowManager: Changing focus of displayId=0 to null from Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:40:23.080  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x5ca8638 on display:0
+09-29 04:40:31.445  1616  1767 V WindowManager: Changing focus of displayId=0 to Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:40:31.477  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x89d4228 on display:0
+09-29 04:42:05.418  1616  1767 I ActivityTaskManager: moveTaskToBack: Task{5b368fd #59 type=standard A=10303:com.johngabie.johnpdf U=0 visible=true mode=fullscreen translucent=false sz=1}
+09-29 04:42:05.435  1616  1767 V WindowManager: Changing focus of displayId=0 to null from Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:42:05.810  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x89d4228 on display:0
+09-29 04:42:23.514  1616  5526 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.johngabie.johnpdf/.MainActivity} from uid 2000
+09-29 04:42:23.563  1616  5918 V WindowManager: Changing focus of displayId=0 to Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:42:23.586  1616  1641 I LaunchCheckinHandler: MotoDisplayed com.johngabie.johnpdf/.MainActivity,wp,wa,72
+09-29 04:42:23.589  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0xe263480 on display:0
+09-29 04:46:30.274  1616  1630 V WindowManager: Changing focus of displayId=0 to null from Window{cf1bb25 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:46:30.407  1616  1630 V WindowManager: Changing focus of displayId=0 to Window{3816eae u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:46:30.435  1616  2960 I WindowManager: finishDrawing of relaunch: Window{3816eae u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} 241ms
+09-29 04:46:30.442  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x761b7e3 on display:0
+09-29 04:46:36.503  1616  1630 V WindowManager: Changing focus of displayId=0 to Window{9eef946 u0 NotificationShade} from Window{3816eae u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:46:39.554  1616  1767 I WindowManager: finishDrawing of relaunch: Window{71c796e u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} 241ms
+09-29 04:46:39.559  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x87332a0 on display:0
+09-29 04:46:40.135  1616  1767 V WindowManager: Changing focus of displayId=0 to Window{71c796e u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{9eef946 u0 NotificationShade}
+09-29 04:47:15.921  1616  6072 V WindowManager: Changing focus of displayId=0 to null from Window{71c796e u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:47:16.063  1616  6071 V WindowManager: Changing focus of displayId=0 to Window{a4315bc u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:47:16.087  1616  6071 I WindowManager: finishDrawing of relaunch: Window{a4315bc u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} 191ms
+09-29 04:47:16.091  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x5f4c3a7 on display:0
+09-29 04:47:16.099  1616  1641 I WindowManager: Screen frozen for +269ms due to Window{a4315bc u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:47:16.533  1616  1767 V WindowManager: Changing focus of displayId=0 to null from Window{a4315bc u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:47:16.652  1616  5078 V WindowManager: Changing focus of displayId=0 to Window{a4eba7f u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:47:16.670  1616  5078 I WindowManager: finishDrawing of relaunch: Window{a4eba7f u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} 175ms
+09-29 04:47:16.673  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x65b7a77 on display:0
+09-29 04:47:16.678  1616  1641 I WindowManager: Screen frozen for +252ms due to Window{a4eba7f u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:49:31.223  1616  6071 V WindowManager: Changing focus of displayId=0 to null from Window{a4eba7f u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:49:31.322  1616  2311 V WindowManager: Changing focus of displayId=0 to Window{60a8714 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:49:31.346  1616  2311 I WindowManager: finishDrawing of relaunch: Window{60a8714 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} 150ms
+09-29 04:49:31.350  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x9d1825f on display:0
+09-29 04:49:31.369  1616  1641 I WindowManager: Screen frozen for +239ms due to Window{60a8714 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:50:17.282  1616  1629 V WindowManager: Changing focus of displayId=0 to null from Window{60a8714 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:50:17.379  1616  1629 V WindowManager: Changing focus of displayId=0 to Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:50:17.398  1616  1629 I WindowManager: finishDrawing of relaunch: Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} 162ms
+09-29 04:50:17.402  1616  2121 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x7895ca3 on display:0
+09-29 04:50:17.409  1616  1641 I WindowManager: Screen frozen for +215ms due to Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:50:51.903  1616  5998 V WindowManager: Changing focus of displayId=0 to null from Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:50:52.924  1616  5998 V WindowManager: Changing focus of displayId=0 to Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:51:01.267  1616  5998 V WindowManager: Changing focus of displayId=0 to Window{f2a4aa8 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:51:01.359  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0xef04ff9 on display:0
+09-29 04:51:25.980  1616  2978 W InputManager-JNI: Input channel object 'f2a4aa8 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity (client)' was disposed without first being removed with the input manager!
+09-29 04:51:25.985  1616  2978 V WindowManager: Changing focus of displayId=0 to Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{f2a4aa8 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity EXITING}
+09-29 04:51:26.049  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-29 04:51:26.160  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0xef04ff9 on display:0
+09-29 04:51:26.177   873   873 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1](this:0xb400007c35a9a8d8,id:-1,api:0,p:-1,c:873) onDestructor()
+09-29 04:51:26.947  9342  9342 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:51:26.952  9342  9342 I AndroidRuntime: Using default boot image
+09-29 04:51:26.952  9342  9342 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:51:31.538  9342  9342 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:51:32.902  9342  9342 D AndroidRuntime: Shutting down VM
+09-29 04:51:48.227  1616  6074 V WindowManager: Changing focus of displayId=0 to Window{4f033e3 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:51:48.290   873  1759 E BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1](this:0xb400007c35a9a8d8,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1'
+09-29 04:51:48.290   873  1759 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1](this:0xb400007c35a9a8d8,id:-1,api:0,p:-1,c:-1) BufferQueue core=(873:/system/bin/surfaceflinger)
+09-29 04:51:48.365  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0xb459cf8 on display:0
+09-29 04:51:48.426  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-29 04:51:49.420  9381  9381 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:51:49.425  9381  9381 I AndroidRuntime: Using default boot image
+09-29 04:51:49.426  9381  9381 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:51:53.955  9381  9381 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:51:55.203  9381  9381 D AndroidRuntime: Shutting down VM
+09-29 04:52:11.065  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=12, inputTypeString=NumberPassword, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=2000006, privateImeOptions=null, actionName=DONE, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=Bundle[mParcelledData.dataSize=404], hintText=null, hintLocales=[]}}, false)
+09-29 04:52:11.074  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=12, inputTypeString=NumberPassword, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=2000006, privateImeOptions=null, actionName=DONE, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=Bundle[mParcelledData.dataSize=404], hintText=null, hintLocales=[]}}, true)
+09-29 04:52:11.078  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInputView():1618 onStartInputView(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=12, inputTypeString=NumberPassword, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=2000006, privateImeOptions=null, actionName=DONE, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=Bundle[{android.support.text.emoji.emojiCompat_metadataVersion=12, androidx.core.view.inputmethod.EditorInfoCompat.STYLUS_HANDWRITING_ENABLED=false, android.support.text.emoji.emojiCompat_replaceAll=false}], hintText=null, hintLocales=[]}}, false)
+09-29 04:52:12.381  9421  9421 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:52:12.389  9421  9421 I AndroidRuntime: Using default boot image
+09-29 04:52:12.389  9421  9421 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:52:17.091  9421  9421 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:52:18.431  9421  9421 D AndroidRuntime: Shutting down VM
+09-29 04:52:32.068  9460  9460 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:52:32.073  9460  9460 I AndroidRuntime: Using default boot image
+09-29 04:52:32.073  9460  9460 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:52:36.800  9460  9460 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:52:38.043  9460  9460 D AndroidRuntime: Shutting down VM
+09-29 04:52:50.692  9525  9525 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:52:50.701  9525  9525 I AndroidRuntime: Using default boot image
+09-29 04:52:50.701  9525  9525 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:52:55.373  9525  9525 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:52:56.748  9525  9525 D AndroidRuntime: Shutting down VM
+09-29 04:53:05.352  1616  2978 W InputManager-JNI: Input channel object '4f033e3 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity (client)' was disposed without first being removed with the input manager!
+09-29 04:53:05.357  1616  2978 V WindowManager: Changing focus of displayId=0 to Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{4f033e3 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity EXITING}
+09-29 04:53:05.411  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-29 04:53:05.530  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0xb459cf8 on display:0
+09-29 04:53:05.547   873   873 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1](this:0xb400007c35a9a8d8,id:-1,api:0,p:-1,c:873) onDestructor()
+09-29 04:53:07.369  9563  9563 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:53:07.374  9563  9563 I AndroidRuntime: Using default boot image
+09-29 04:53:07.374  9563  9563 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:53:11.877  9563  9563 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:53:13.120  9563  9563 D AndroidRuntime: Shutting down VM
+09-29 04:53:23.437  9602  9602 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:53:23.446  9602  9602 I AndroidRuntime: Using default boot image
+09-29 04:53:23.446  9602  9602 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:53:28.299  9602  9602 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:53:29.568  9602  9602 D AndroidRuntime: Shutting down VM
+09-29 04:53:37.655  1616  2978 V WindowManager: Changing focus of displayId=0 to Window{f2b9284 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:53:37.686   873   980 E BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1](this:0xb400007c35a9a8d8,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1'
+09-29 04:53:37.686   873   980 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1](this:0xb400007c35a9a8d8,id:-1,api:0,p:-1,c:-1) BufferQueue core=(873:/system/bin/surfaceflinger)
+09-29 04:53:37.719  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x30eda25 on display:0
+09-29 04:53:37.740  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-29 04:53:39.837  9643  9643 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:53:39.842  9643  9643 I AndroidRuntime: Using default boot image
+09-29 04:53:39.842  9643  9643 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:53:44.411  9643  9643 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:53:45.658  9643  9643 D AndroidRuntime: Shutting down VM
+09-29 04:53:58.488  9678  9678 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:53:58.493  9678  9678 I AndroidRuntime: Using default boot image
+09-29 04:53:58.493  9678  9678 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:54:03.102  9678  9678 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:54:04.310  9678  9678 D AndroidRuntime: Shutting down VM
+09-29 04:54:18.305  1616  6067 W InputManager-JNI: Input channel object 'f2b9284 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity (client)' was disposed without first being removed with the input manager!
+09-29 04:54:18.312  1616  6067 V WindowManager: Changing focus of displayId=0 to Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from Window{f2b9284 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity EXITING}
+09-29 04:54:18.363  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-29 04:54:18.482  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x30eda25 on display:0
+09-29 04:54:18.499   873   873 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#1](this:0xb400007c35a9a8d8,id:-1,api:0,p:-1,c:873) onDestructor()
+09-29 04:54:18.655  9714  9714 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:54:18.660  9714  9714 I AndroidRuntime: Using default boot image
+09-29 04:54:18.660  9714  9714 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:54:23.271  9714  9714 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:54:24.613  9714  9714 D AndroidRuntime: Shutting down VM
+09-29 04:54:32.904  9748  9748 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:54:32.913  9748  9748 I AndroidRuntime: Using default boot image
+09-29 04:54:32.913  9748  9748 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:54:37.762  9748  9748 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:54:39.137  9748  9748 D AndroidRuntime: Shutting down VM
+09-29 04:54:48.427  9784  9784 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:54:48.433  9784  9784 I AndroidRuntime: Using default boot image
+09-29 04:54:48.433  9784  9784 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:54:53.152  9784  9784 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:54:54.383  9784  9784 D AndroidRuntime: Shutting down VM
+09-29 04:55:04.886  9829  9829 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:55:04.891  9829  9829 I AndroidRuntime: Using default boot image
+09-29 04:55:04.891  9829  9829 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:55:09.464  9829  9829 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:55:10.841  9829  9829 D AndroidRuntime: Shutting down VM
+09-29 04:55:30.366  9870  9870 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:55:30.372  9870  9870 I AndroidRuntime: Using default boot image
+09-29 04:55:30.372  9870  9870 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:55:35.108  9870  9870 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:55:36.367  9870  9870 D AndroidRuntime: Shutting down VM
+09-29 04:55:42.406  1616  1629 I ActivityTaskManager: moveTaskToBack: Task{5b368fd #59 type=standard A=10303:com.johngabie.johnpdf U=0 visible=true mode=fullscreen translucent=false sz=1}
+09-29 04:55:42.421  1616  1629 V WindowManager: Changing focus of displayId=0 to null from Window{d485707 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:55:42.762  1616  1640 I PowerHalWrapper: amsBoostNotify pid:7486,activity:com.johngabie.johnpdf.MainActivity, package:com.johngabie.johnpdf, mProcessCreatePacknull 
+09-29 04:55:42.766  1616  1641 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x7895ca3 on display:0
+09-29 04:55:42.818   873   873 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c359ae8d8,id:-1,api:0,p:-1,c:873) onDestructor()
+09-29 04:56:00.775  9948  9948 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:56:00.781  9948  9948 I AndroidRuntime: Using default boot image
+09-29 04:56:00.781  9948  9948 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:56:05.420  9948  9948 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+09-29 04:56:05.615  9948  9948 I AndroidRuntime: VM exiting with result code 0.
+09-29 04:56:35.617 10444 10444 I ResolverListAdapter: Add DisplayResolveInfo component: ComponentInfo{com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}, intent component: ComponentInfo{com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:57:01.841 10444 10444 I ResolverListAdapter: Add DisplayResolveInfo component: ComponentInfo{com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}, intent component: ComponentInfo{com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:57:02.844 10518 10518 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:57:02.849 10518 10518 I AndroidRuntime: Using default boot image
+09-29 04:57:02.849 10518 10518 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:57:07.205 10518 10518 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:57:08.433 10518 10518 D AndroidRuntime: Shutting down VM
+09-29 04:58:01.193 10444 10444 I ResolverListAdapter: Add DisplayResolveInfo component: ComponentInfo{com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}, intent component: ComponentInfo{com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:58:02.188 10589 10589 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:58:02.192 10589 10589 I AndroidRuntime: Using default boot image
+09-29 04:58:02.192 10589 10589 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:58:06.655 10589 10589 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:58:07.853 10589 10589 D AndroidRuntime: Shutting down VM
+09-29 04:58:23.955 10623 10623 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:58:23.960 10623 10623 I AndroidRuntime: Using default boot image
+09-29 04:58:23.961 10623 10623 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:58:28.459 10623 10623 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:58:29.687 10623 10623 D AndroidRuntime: Shutting down VM
+09-29 04:58:49.606  1616  5918 I ActivityTaskManager: START u0 {act=android.intent.action.VIEW dat=content://com.google.android.apps.nbu.files.provider/2/1000000153 typ=application/pdf flg=0x83000001 cmp=com.johngabie.johnpdf/.MainActivity} from uid 10169
+09-29 04:58:49.657  1616  3894 I PowerHalWrapper: amsBoostNotify pid:7486,activity:com.johngabie.johnpdf.MainActivity, package:com.johngabie.johnpdf, mProcessCreatePacknull 
+09-29 04:58:49.658  7486 10661 D libMEOW : applied 1 plugins for [com.johngabie.johnpdf]:
+09-29 04:58:49.758   873   980 E BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c35b498d8,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0'
+09-29 04:58:49.758   873   980 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c35b498d8,id:-1,api:0,p:-1,c:-1) BufferQueue core=(873:/system/bin/surfaceflinger)
+09-29 04:58:49.762  1616  5918 V WindowManager: Changing focus of displayId=0 to Window{f737dbe u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:58:49.804  1616  1641 I LaunchCheckinHandler: MotoDisplayed com.johngabie.johnpdf/.MainActivity,wp,ca,150
+09-29 04:58:49.810  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x631ab2b on display:0
+09-29 04:58:49.814  1616  1637 I ActivityTaskManager: Displayed com.johngabie.johnpdf/.MainActivity: +198ms
+09-29 04:58:49.899  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-29 04:58:51.758 10680 10680 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:58:51.762 10680 10680 I AndroidRuntime: Using default boot image
+09-29 04:58:51.762 10680 10680 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:58:56.575 10680 10680 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:58:57.858 10680 10680 D AndroidRuntime: Shutting down VM
+09-29 04:59:07.573 10717 10717 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:59:07.580 10717 10717 I AndroidRuntime: Using default boot image
+09-29 04:59:07.580 10717 10717 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:59:12.305 10717 10717 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:59:13.641 10717 10717 D AndroidRuntime: Shutting down VM
+09-29 04:59:23.176  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, true)
+09-29 04:59:23.205  1616  5918 W InputManager-JNI: Input channel object 'f737dbe com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity (client)' was disposed without first being removed with the input manager!
+09-29 04:59:23.212  1616  5918 V WindowManager: Changing focus of displayId=0 to null from Window{f737dbe u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:59:23.214  7486 10762 D libMEOW : applied 1 plugins for [com.johngabie.johnpdf]:
+09-29 04:59:23.215   873   873 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c35b498d8,id:-1,api:0,p:-1,c:873) onDestructor()
+09-29 04:59:23.362   873  1377 E BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c359c18d8,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0'
+09-29 04:59:23.363   873  1377 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c359c18d8,id:-1,api:0,p:-1,c:-1) BufferQueue core=(873:/system/bin/surfaceflinger)
+09-29 04:59:23.365  1616  5078 D ImmersiveModeConfirmation: immersiveModeChanged() is triggered by Window{710e2a8 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} for rootDisplayAreaId0 by ImmersiveModeConfirmation{display0, @219109103}
+09-29 04:59:23.368  1616  5078 V WindowManager: Changing focus of displayId=0 to Window{710e2a8 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:59:23.407  1616  2295 I WindowManager: finishDrawing of relaunch: Window{710e2a8 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} 217ms
+09-29 04:59:23.413  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x503e169 on display:0
+09-29 04:59:23.657  1616  5078 I ActivityManager: Force stopping com.johngabie.johnpdf appid=10303 user=0: from pid 10773 and uid 2000
+09-29 04:59:23.663  1616  5078 I ActivityManager: Killing 7486:com.johngabie.johnpdf/u0a303 (adj 0, setSvc -10000): stop com.johngabie.johnpdf due to from pid 10773 and uid 2000
+09-29 04:59:23.667  1616  5078 W ActivityTaskManager: Force removing ActivityRecord{8af7fd4 u0 com.johngabie.johnpdf/.MainActivity t60 f}}: app died, no saved state
+09-29 04:59:23.668  1616  5078 V WindowManager: Changing focus of displayId=0 to null from Window{710e2a8 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:59:23.669  1616  5078 I WindowManager: SURFACE hide Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x503e169 on display:0
+09-29 04:59:23.671  1616  5078 W InputManager-JNI: Input channel object '710e2a8 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity (client)' was disposed without first being removed with the input manager!
+09-29 04:59:23.674  1616  5078 W ActivityTaskManager: Force removing ActivityRecord{9f0e6bc u0 com.johngabie.johnpdf/.MainActivity t59 f}}: app died, no saved state
+09-29 04:59:23.675  1616  5078 W InputManager-JNI: Input channel object 'd485707 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity (client)' was disposed without first being removed with the input manager!
+09-29 04:59:23.697  1616  1647 W UsageStatsService: Unexpected activity event reported! (com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity event : 23 instanceId : 173725334)
+09-29 04:59:23.697  2927  2927 D HCENfc_RegisteredServicesCache: onReceive() - pkg: com.johngabie.johnpdf
+09-29 04:59:23.727  1616  6074 V ActivityManager: Got obituary of 7486:com.johngabie.johnpdf
+09-29 04:59:23.742   873   873 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c359c18d8,id:-1,api:0,p:-1,c:873) onDestructor()
+09-29 04:59:23.778  2399  2467 D CustomAppIcons: Get custom app icon: android.app.Application@f6ee9d5 | com.johngabie.johnpdf | com.johngabie.johnpdf.mainactivity
+09-29 04:59:23.778  2399  2467 D CustomAppIcons: Icon from CustomAppIcons: com.johngabie.johnpdf | com.johngabie.johnpdf.mainactivity | null
+09-29 04:59:23.779  2399  2467 D CustomAppIcons: Get custom app icon: android.app.Application@f6ee9d5 | com.johngabie.johnpdf | com.johngabie.johnpdf.mainactivity
+09-29 04:59:23.779  2399  2467 D CustomAppIcons: Icon from CustomAppIcons: com.johngabie.johnpdf | com.johngabie.johnpdf.mainactivity | null
+09-29 04:59:24.343 10801 10801 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:59:24.348 10801 10801 I AndroidRuntime: Using default boot image
+09-29 04:59:24.348 10801 10801 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:59:28.683 10801 10801 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+09-29 04:59:28.685 10801 10801 W Monkey  : args: [-p, com.johngabie.johnpdf, -c, android.intent.category.LAUNCHER, 1]
+09-29 04:59:28.686 10801 10801 W Monkey  :  arg: "com.johngabie.johnpdf"
+09-29 04:59:28.687 10801 10801 W Monkey  : data="com.johngabie.johnpdf"
+09-29 04:59:28.788  1616  4659 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.johngabie.johnpdf/.MainActivity} from uid 2000
+09-29 04:59:28.846   873   981 E BufferQueueDebug: [Splash Screen com.johngabie.johnpdf#0](this:0xb400007c359ae8d8,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'Splash Screen com.johngabie.johnpdf#0'
+09-29 04:59:28.846   873   981 I BufferQueueDebug: [Splash Screen com.johngabie.johnpdf#0](this:0xb400007c359ae8d8,id:-1,api:0,p:-1,c:-1) BufferQueue core=(873:/system/bin/surfaceflinger)
+09-29 04:59:28.858 10801 10801 I AndroidRuntime: VM exiting with result code 0.
+09-29 04:59:28.867  1616  1649 I ActivityManager: Start proc 10830:com.johngabie.johnpdf/u0a303 for pre-top-activity {com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 04:59:28.890  1616  1641 I WindowManager: SURFACE SHOW Surface(name=Splash Screen com.johngabie.johnpdf)/@0x83a096d on display:0
+09-29 04:59:28.901  1616  2241 I PowerHalWrapper: amsBoostNotify pid:10830,activity:com.johngabie.johnpdf.MainActivity, package:com.johngabie.johnpdf, mProcessCreatePacknull 
+09-29 04:59:28.930 10830 10830 V GraphicsEnvironment: ANGLE Developer option for 'com.johngabie.johnpdf' set to: 'default'
+09-29 04:59:28.931 10830 10830 V GraphicsEnvironment: ANGLE GameManagerService for com.johngabie.johnpdf: false
+09-29 04:59:28.955 10830 10847 D libMEOW : applied 1 plugins for [com.johngabie.johnpdf]:
+09-29 04:59:28.994 10830 10830 D libMEOW : applied 1 plugins for [com.johngabie.johnpdf]:
+09-29 04:59:29.167   873   981 E BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c35bc28d8,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0'
+09-29 04:59:29.167   873   981 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c35bc28d8,id:-1,api:0,p:-1,c:-1) BufferQueue core=(873:/system/bin/surfaceflinger)
+09-29 04:59:29.170  1616  2241 V WindowManager: Changing focus of displayId=0 to Window{4380487 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 04:59:29.176 10830 10845 D libMEOW : applied 1 plugins for [com.johngabie.johnpdf]:
+09-29 04:59:29.243  1616  1641 I LaunchCheckinHandler: MotoDisplayed com.johngabie.johnpdf/.MainActivity,cp,ca,414
+09-29 04:59:29.244  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x34cd14c on display:0
+09-29 04:59:29.247  1616  1637 I ActivityTaskManager: Displayed com.johngabie.johnpdf/.MainActivity: +455ms
+09-29 04:59:29.381  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+09-29 04:59:29.550  1616  3894 W InputManager-JNI: Input channel object '21c66fd Splash Screen com.johngabie.johnpdf (client)' was disposed without first being removed with the input manager!
+09-29 04:59:29.722  1616  1641 I WindowManager: SURFACE hide Surface(name=Splash Screen com.johngabie.johnpdf)/@0x83a096d on display:0
+09-29 04:59:29.741   873   873 I BufferQueueDebug: [Splash Screen com.johngabie.johnpdf#0](this:0xb400007c359ae8d8,id:-1,api:0,p:-1,c:873) onDestructor()
+09-29 04:59:34.390 10830 10873 D ProfileInstaller: Skipping profile installation for com.johngabie.johnpdf
+09-29 04:59:43.921 10874 10874 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:59:43.926 10874 10874 I AndroidRuntime: Using default boot image
+09-29 04:59:43.927 10874 10874 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:59:48.612 10874 10874 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:59:50.082 10874 10874 D AndroidRuntime: Shutting down VM
+09-29 05:00:02.537 10920 10920 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 05:00:02.543 10920 10920 I AndroidRuntime: Using default boot image
+09-29 05:00:02.543 10920 10920 I AndroidRuntime: Leaving lock profiling enabled
+09-29 05:00:07.261 10920 10920 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 05:00:08.526 10920 10920 D AndroidRuntime: Shutting down VM
+09-29 05:00:25.451  1965  1965 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1532 onStartInput(EditorInfo{EditorInfo{packageName=com.johngabie.johnpdf, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, true)
+09-29 05:00:25.498  1616  5526 W InputManager-JNI: Input channel object '4380487 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity (client)' was disposed without first being removed with the input manager!
+09-29 05:00:25.505  1616  5526 V WindowManager: Changing focus of displayId=0 to null from Window{4380487 u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity}
+09-29 05:00:25.507 10830 10958 D libMEOW : applied 1 plugins for [com.johngabie.johnpdf]:
+09-29 05:00:25.513   873   873 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c35bc28d8,id:-1,api:0,p:-1,c:873) onDestructor()
+09-29 05:00:25.675   873   980 E BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c35b498d8,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0'
+09-29 05:00:25.675   873   980 I BufferQueueDebug: [com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity#0](this:0xb400007c35b498d8,id:-1,api:0,p:-1,c:-1) BufferQueue core=(873:/system/bin/surfaceflinger)
+09-29 05:00:25.678  1616  2241 D ImmersiveModeConfirmation: immersiveModeChanged() is triggered by Window{6fc3ebe u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} for rootDisplayAreaId0 by ImmersiveModeConfirmation{display0, @219109103}
+09-29 05:00:25.682  1616  2241 V WindowManager: Changing focus of displayId=0 to Window{6fc3ebe u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} from null
+09-29 05:00:25.730  1616  2241 I WindowManager: finishDrawing of relaunch: Window{6fc3ebe u0 com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity} 253ms
+09-29 05:00:25.739  1616  1641 I WindowManager: SURFACE SHOW Surface(name=com.johngabie.johnpdf/com.johngabie.johnpdf.MainActivity)/@0x88ef6fc on display:0
