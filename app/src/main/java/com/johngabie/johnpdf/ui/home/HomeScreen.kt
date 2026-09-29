@@ -1,10 +1,17 @@
 package com.johngabie.johnpdf.ui.home
 
 import android.Manifest
+import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +57,12 @@ import com.johngabie.johnpdf.ui.common.ConfirmDialog
 import com.johngabie.johnpdf.ui.common.ErrorDialog
 import com.johngabie.johnpdf.util.friendlyDate
 
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -57,7 +70,20 @@ fun HomeScreen(viewModel: HomeViewModel) {
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let(viewModel::openUri)
     }
-    val legacyPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+    val legacyPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        // Android 7–10, depois de "Não perguntar de novo": o sistema não mostra mais o
+        // diálogo (granted=false sem rationale) e "Permitir" ficaria sem efeito. Nesse
+        // caso, manda o usuário direto para a tela de permissões do app.
+        if (!granted) {
+            val activity = context.findActivity()
+            if (activity != null && !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                try {
+                    context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")))
+                } catch (e: ActivityNotFoundException) {
+                    // Sem tela de configurações do app: nada a fazer além do refresh abaixo.
+                }
+            }
+        }
         viewModel.refresh()
     }
     LifecycleResumeEffect(Unit) {
