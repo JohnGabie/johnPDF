@@ -138,7 +138,8 @@ class HomeContentTest {
         show(HomeUiState(recents = listOf(recent)))
         rule.onNodeWithText("Fatura.pdf").performTouchInput { longClick() }
         rule.onNodeWithText("Remover da lista?").assertIsDisplayed()
-        rule.onNodeWithText("Sim").performClick()
+        rule.onNodeWithText("O arquivo continua no celular.").assertIsDisplayed()
+        rule.onNodeWithText("Remover").performClick()
         assertEquals(listOf("remove:Fatura.pdf"), events)
     }
 

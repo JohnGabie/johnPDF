@@ -73,10 +73,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.johngabie.johnpdf.data.PdfFile
 import com.johngabie.johnpdf.data.RecentItem
 import com.johngabie.johnpdf.data.StorageAccess
-import com.johngabie.johnpdf.ui.common.BigButton
-import com.johngabie.johnpdf.ui.common.ConfirmDialog
 import com.johngabie.johnpdf.ui.common.ErrorDialog
 import com.johngabie.johnpdf.ui.common.PrimaryButton
+import com.johngabie.johnpdf.ui.common.RemoveDialog
 import com.johngabie.johnpdf.ui.common.SecondaryButton
 import com.johngabie.johnpdf.ui.icons.JohnIcons
 import com.johngabie.johnpdf.ui.theme.ListItemMinHeight
@@ -179,10 +178,9 @@ fun HomeContent(
     }
 
     pendingRemoval?.let { item ->
-        ConfirmDialog(
-            "Remover da lista?",
-            onYes = { onRemoveRecent(item); pendingRemoval = null },
-            onNo = { pendingRemoval = null },
+        RemoveDialog(
+            onConfirm = { onRemoveRecent(item); pendingRemoval = null },
+            onCancel = { pendingRemoval = null },
         )
     }
     state.error?.let { ErrorDialog(it, onDismissError) }

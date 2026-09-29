@@ -3,12 +3,16 @@ package com.johngabie.johnpdf.ui.common
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.height
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.johngabie.johnpdf.data.AppError
 import com.johngabie.johnpdf.ui.theme.JohnPdfTheme
@@ -40,6 +44,30 @@ class DialogsTest {
     @Test fun remove_dialog_has_exactly_one_primary_button() {
         rule.setContent { JohnPdfTheme { RemoveDialog(onConfirm = {}, onCancel = {}) } }
         rule.onAllNodesWithTag("primary_button").assertCountEquals(1)
+    }
+
+    /**
+     * M3: a ação dismissiva fica à esquerda da confirmatória, ambas na mesma linha (nunca
+     * empilhadas). As alturas são de propósito diferentes — 56dp na ação principal, 48dp na
+     * secundária (spec §3.1) —, então a comparação é pelo topo, não pelo centro vertical.
+     */
+    @Test fun acoes_do_dialogo_ficam_alinhadas_a_direita() {
+        rule.setContent { JohnPdfTheme { RemoveDialog(onConfirm = {}, onCancel = {}) } }
+        val cancelar = rule.onNodeWithText("Cancelar").getBoundsInRoot()
+        val remover = rule.onNodeWithText("Remover").getBoundsInRoot()
+        assertTrue("'Cancelar' ($cancelar) deveria estar à esquerda de 'Remover' ($remover)", cancelar.right <= remover.left)
+        assertEquals("botões em linhas diferentes: $cancelar vs $remover", cancelar.top.value, remover.top.value, 1f)
+        assertTrue("'Remover' com ${remover.height}, esperado >= 56dp", remover.height >= 56.dp)
+        assertTrue("'Cancelar' com ${cancelar.height}, esperado >= 48dp", cancelar.height >= 48.dp)
+    }
+
+    /** O diálogo de senha renderiza inteiro com os ícones vendorizados (sem material-icons-extended). */
+    @Test fun password_dialog_renders_title_field_and_actions() {
+        rule.setContent { JohnPdfTheme { PasswordDialog(wrongAttempt = false, onSubmit = {}, onCancel = {}) } }
+        rule.onNodeWithText("PDF protegido").assertIsDisplayed()
+        rule.onNodeWithTag("password_field").assertIsDisplayed()
+        rule.onNodeWithContentDescription("Mostrar senha").assertIsDisplayed()
+        rule.onNodeWithText("Cancelar").assertIsDisplayed()
     }
 
     @Test fun remove_dialog_confirm_calls_on_confirm() {
