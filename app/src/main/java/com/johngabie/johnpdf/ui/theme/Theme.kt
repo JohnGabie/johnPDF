@@ -31,34 +31,48 @@ val MaxActionWidth = 360.dp
 val PageGap = SpaceS
 val PageElevation = 1.dp
 
-// Valores provisórios — a paleta final está pendente do estudo em coolors.co (spec D1 §G5,
-// fora de escopo aqui). A estrutura (todos os papéis usados pelo app, incluindo
-// surfaceContainer*, secondaryContainer e outlineVariant) já entra completa para acabar
-// com o lilás padrão do M3 vazando nos componentes não customizados.
+// ------------------------------------------------------------- esquema claro
+// Paleta Blue Lagoon (estudo de cor a021abb48ee0a08b3), seed #006494.
+// TODOS os papéis estão preenchidos de propósito: um lightColorScheme() parcial
+// deixa surfaceContainer*, secondaryContainer e tertiary* no baseline roxo do M3
+// — era daí que vinha o lilás nas barras e nos diálogos.
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF0B4F9C),
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFD6E4F7),
-    onPrimaryContainer = Color(0xFF0A2540),
-    secondary = Color(0xFF3A5B7D),
-    onSecondary = Color.White,
-    secondaryContainer = Color(0xFFD9E6F5),
-    onSecondaryContainer = Color(0xFF12293D),
-    background = Color(0xFFFAFAFA),
-    onBackground = Color(0xFF111111),
-    surface = Color(0xFFFAFAFA),
-    onSurface = Color(0xFF111111),
-    surfaceVariant = Color(0xFFE8EDF3),
-    onSurfaceVariant = Color(0xFF44474A),
-    surfaceContainer = Color(0xFFF1F1F1),
-    surfaceContainerLow = Color(0xFFF6F6F6),
-    surfaceContainerHigh = Color(0xFFE6E6E6),
-    outline = Color(0xFF74777A),
-    outlineVariant = Color(0xFFC4C7CA),
-    error = Color(0xFFB00020),
-    onError = Color.White,
-    errorContainer = Color(0xFFFBD9DD),
-    onErrorContainer = Color(0xFF410E12),
+    primary = Color(0xFF006494),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFCBE6FF),
+    onPrimaryContainer = Color(0xFF001E30),
+    secondary = Color(0xFF4E616D),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFD2E5F5),
+    onSecondaryContainer = Color(0xFF0B1D29),
+    tertiary = Color(0xFF00677C),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFB2EBFF),
+    onTertiaryContainer = Color(0xFF001F27),
+    error = Color(0xFFBA1A1A),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002),
+    background = Color(0xFFF7FAFC),
+    onBackground = Color(0xFF171C1F),
+    surface = Color(0xFFF7FAFC),
+    onSurface = Color(0xFF171C1F),
+    surfaceVariant = Color(0xFFDCE3E9),
+    onSurfaceVariant = Color(0xFF40484D),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFF1F4F7),
+    surfaceContainer = Color(0xFFEBEFF2),
+    surfaceContainerHigh = Color(0xFFE5EAEE),
+    surfaceContainerHighest = Color(0xFFDFE4E8),
+    outline = Color(0xFF70787D),
+    // Mais escuro que um outlineVariant padrão (~1,6:1): o divisor recuado da
+    // lista é o único separador entre um PDF e o seguinte e precisa de >= 3:1.
+    outlineVariant = Color(0xFF767E83),
+    inverseSurface = Color(0xFF2C3134),
+    inverseOnSurface = Color(0xFFEDF1F4),
+    inversePrimary = Color(0xFF96C4E5),
+    surfaceTint = Color(0xFF006494),
+    scrim = Color(0xFF000000),
 )
 
 private val DarkColors = darkColorScheme(
@@ -103,6 +117,10 @@ internal val JohnTypography = Typography(
     labelMedium = Base.labelMedium.copy(fontFamily = JohnFontFamily, fontSize = 16.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium),
     labelSmall = Base.labelSmall.copy(fontFamily = JohnFontFamily, fontSize = 16.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium),
 )
+
+// ------------------------------------------- exposição só para os testes
+/** Exposto só para os testes de contraste. */
+internal val LightSchemeForTest = LightColors
 
 @Composable
 fun JohnPdfTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
