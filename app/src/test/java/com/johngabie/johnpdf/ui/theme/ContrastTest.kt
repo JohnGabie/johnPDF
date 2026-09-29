@@ -135,4 +135,67 @@ class ContrastTest {
             LightSchemeForTest.primary == Color(0xFF006494),
         )
     }
+
+    @Test fun dark_text_meets_wcag_aa() = assertAa("escuro", DarkSchemeForTest)
+
+    @Test fun dark_main_text_meets_wcag_aaa() = assertAaa("escuro", DarkSchemeForTest)
+
+    @Test fun dark_outlines_meet_non_text_minimum() = assertOutlines("escuro", DarkSchemeForTest)
+
+    @Test fun dark_disabled_label_stays_readable() = assertDisabled("escuro", DarkSchemeForTest)
+
+    @Test fun dark_primary_is_readable_on_every_container() {
+        DarkSchemeForTest.containers().forEach { (name, bg) ->
+            val r = contrast(DarkSchemeForTest.primary, bg)
+            assertTrue("[escuro] primary/$name = %.2f:1, mínimo 4.5:1".format(r), r >= 4.5)
+        }
+    }
+
+    @Test fun dark_lone_icon_is_visible_on_every_container() {
+        DarkSchemeForTest.containers().forEach { (name, bg) ->
+            val r = contrast(DarkSchemeForTest.onSurfaceVariant, bg)
+            assertTrue("[escuro] ícone onSurfaceVariant/$name = %.2f:1, mínimo 3:1".format(r), r >= 3.0)
+        }
+    }
+
+    @Test fun dark_primary_is_blue_lagoon() {
+        assertTrue(
+            "primary do escuro deve ser #96C4E5",
+            DarkSchemeForTest.primary == Color(0xFF96C4E5),
+        )
+    }
+
+    /**
+     * Review Focus 5: erro e confirmação. As duas mensagens precisam ser legíveis
+     * sobre a superfície em que aparecem — e, como error e primary têm quase a
+     * mesma luminância (1,00:1 no claro), o erro nunca é sinalizado só por cor.
+     */
+    @Test fun error_and_confirmation_are_readable_in_both_schemes() {
+        listOf("claro" to LightSchemeForTest, "escuro" to DarkSchemeForTest).forEach { (n, s) ->
+            val erro = contrast(s.error, s.surfaceContainerHigh)
+            assertTrue("[$n] error/surfaceContainerHigh = %.2f:1".format(erro), erro >= 4.5)
+            val snack = contrast(s.inverseOnSurface, s.inverseSurface)
+            assertTrue("[$n] snackbar = %.2f:1".format(snack), snack >= 4.5)
+            val acao = contrast(s.inversePrimary, s.inverseSurface)
+            assertTrue("[$n] ação do snackbar = %.2f:1".format(acao), acao >= 4.5)
+        }
+    }
+
+    /** Nenhum papel pode ficar na cor de "não preenchido" (lilás do baseline M3). */
+    @Test fun no_role_keeps_the_material_baseline_purple() {
+        val lilases = listOf(
+            Color(0xFFE8DEF8), Color(0xFFEADDFF), Color(0xFF6750A4), Color(0xFFD0BCFF),
+            Color(0xFF4A4458), Color(0xFF21005D), Color(0xFF1D192B), Color(0xFF49454F),
+        )
+        listOf("claro" to LightSchemeForTest, "escuro" to DarkSchemeForTest).forEach { (n, s) ->
+            val usados = s.textPairs().flatMap { listOf(it.second, it.third) } +
+                listOf(s.outline, s.outlineVariant, s.surfaceTint, s.scrim)
+            lilases.forEach { roxo ->
+                assertTrue(
+                    "[$n] papel ficou no baseline roxo do M3: $roxo",
+                    usados.none { it == roxo },
+                )
+            }
+        }
+    }
 }

@@ -75,30 +75,43 @@ private val LightColors = lightColorScheme(
     scrim = Color(0xFF000000),
 )
 
+// ------------------------------------------------------------ esquema escuro
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF9FC6F5),
-    onPrimary = Color(0xFF00325C),
-    primaryContainer = Color(0xFF0B4F9C),
-    onPrimaryContainer = Color(0xFFD6E4F7),
-    secondary = Color(0xFFA7C6E5),
-    onSecondary = Color(0xFF17324A),
-    secondaryContainer = Color(0xFF2C4560),
-    onSecondaryContainer = Color(0xFFD9E6F5),
-    background = Color(0xFF121212),
-    onBackground = Color(0xFFEDEDED),
-    surface = Color(0xFF121212),
-    onSurface = Color(0xFFEDEDED),
-    surfaceVariant = Color(0xFF303336),
-    onSurfaceVariant = Color(0xFFC4C7CA),
-    surfaceContainer = Color(0xFF1D1D1D),
-    surfaceContainerLow = Color(0xFF181818),
-    surfaceContainerHigh = Color(0xFF2A2A2A),
-    outline = Color(0xFF8E9194),
-    outlineVariant = Color(0xFF44474A),
+    primary = Color(0xFF96C4E5),
+    onPrimary = Color(0xFF003450),
+    primaryContainer = Color(0xFF004B70),
+    onPrimaryContainer = Color(0xFFCBE6FF),
+    secondary = Color(0xFFB6C9D8),
+    onSecondary = Color(0xFF21333E),
+    secondaryContainer = Color(0xFF384955),
+    onSecondaryContainer = Color(0xFFD2E5F5),
+    tertiary = Color(0xFF83D3EB),
+    onTertiary = Color(0xFF003641),
+    tertiaryContainer = Color(0xFF004E5D),
+    onTertiaryContainer = Color(0xFFB2EBFF),
     error = Color(0xFFFFB4AB),
     onError = Color(0xFF690005),
     errorContainer = Color(0xFF93000A),
     onErrorContainer = Color(0xFFFFDAD6),
+    background = Color(0xFF0F1417),
+    onBackground = Color(0xFFDFE3E7),
+    surface = Color(0xFF0F1417),
+    onSurface = Color(0xFFDFE3E7),
+    surfaceVariant = Color(0xFF40484D),
+    onSurfaceVariant = Color(0xFFC0C8CD),
+    surfaceContainerLowest = Color(0xFF0A0F12),
+    surfaceContainerLow = Color(0xFF171C1F),
+    surfaceContainer = Color(0xFF1B2124),
+    surfaceContainerHigh = Color(0xFF262B2F),
+    surfaceContainerHighest = Color(0xFF31363A),
+    outline = Color(0xFF8A9297),
+    // Mais claro que o padrão, pelo mesmo motivo do esquema claro.
+    outlineVariant = Color(0xFF848C91),
+    inverseSurface = Color(0xFFDFE3E7),
+    inverseOnSurface = Color(0xFF2C3134),
+    inversePrimary = Color(0xFF006494),
+    surfaceTint = Color(0xFF96C4E5),
+    scrim = Color(0xFF000000),
 )
 
 // A troca para Atkinson Hyperlegible Next é um commit isolado (spec §2.2), fora deste plano.
@@ -121,6 +134,7 @@ internal val JohnTypography = Typography(
 // ------------------------------------------- exposição só para os testes
 /** Exposto só para os testes de contraste. */
 internal val LightSchemeForTest = LightColors
+internal val DarkSchemeForTest = DarkColors
 
 @Composable
 fun JohnPdfTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
