@@ -67,6 +67,22 @@ class DarkThemeTest {
         assertTrue("vão/página no escuro = %.2f:1, mínimo 3:1".format(r), r >= 3.0)
     }
 
+    /**
+     * O indicador da aba vem de JohnColors, não do secondaryContainer do M3
+     * (que dá 1,12:1 contra a barra no claro).
+     */
+    @Test fun navigation_bar_item_colors_use_the_tab_indicator_role() {
+        val (claro, escuro) = bothThemes {
+            // Compor o helper aqui garante que ele existe e não estoura na composição.
+            johnNavigationBarItemColors()
+            JohnTheme.colors.tabIndicator to MaterialTheme.colorScheme.onSurfaceVariant
+        }
+        assertEquals(Color(0xFF365A6C), claro.first)
+        assertEquals(Color(0xFF5A7385), escuro.first)
+        assertNotEquals(claro.first, claro.second)
+        assertNotEquals(escuro.first, escuro.second)
+    }
+
     /** As barras e os diálogos têm um papel só, e ele muda com o tema. */
     @Test fun bar_and_dialog_colors_come_from_the_scheme() {
         val (claro, escuro) = bothThemes { JohnTheme.barColor to JohnTheme.dialogColor }

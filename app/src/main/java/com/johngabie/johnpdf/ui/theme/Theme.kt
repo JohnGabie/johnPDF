@@ -2,6 +2,8 @@ package com.johngabie.johnpdf.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -180,6 +182,19 @@ object JohnTheme {
     val dialogColor: Color
         @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme.surfaceContainerHigh
 }
+
+/**
+ * Cores dos itens da NavigationBar. Sem isto, o M3 usa `secondaryContainer`
+ * como indicador — 1,12:1 contra a barra no claro, ou seja, invisível.
+ */
+@Composable
+fun johnNavigationBarItemColors(): NavigationBarItemColors = NavigationBarItemDefaults.colors(
+    selectedIconColor = JohnTheme.colors.onTabIndicator,
+    selectedTextColor = MaterialTheme.colorScheme.onSurface,
+    indicatorColor = JohnTheme.colors.tabIndicator,
+    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+)
 
 // A troca para Atkinson Hyperlegible Next é um commit isolado (spec §2.2), fora deste plano.
 internal val JohnFontFamily = FontFamily.Default

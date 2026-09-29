@@ -78,6 +78,7 @@ import com.johngabie.johnpdf.ui.common.PrimaryButton
 import com.johngabie.johnpdf.ui.common.RemoveDialog
 import com.johngabie.johnpdf.ui.common.SecondaryButton
 import com.johngabie.johnpdf.ui.icons.JohnIcons
+import com.johngabie.johnpdf.ui.theme.JohnTheme
 import com.johngabie.johnpdf.ui.theme.ListItemMinHeight
 import com.johngabie.johnpdf.ui.theme.MaxActionWidth
 import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
@@ -85,6 +86,7 @@ import com.johngabie.johnpdf.ui.theme.SpaceL
 import com.johngabie.johnpdf.ui.theme.SpaceS
 import com.johngabie.johnpdf.ui.theme.SpaceXl
 import com.johngabie.johnpdf.ui.theme.SpaceXxl
+import com.johngabie.johnpdf.ui.theme.johnNavigationBarItemColors
 import com.johngabie.johnpdf.util.friendlyDate
 
 private tailrec fun Context.findActivity(): Activity? = when (this) {
@@ -224,7 +226,10 @@ private fun HomeTopBar(onOpenPicker: () -> Unit) {
  */
 @Composable
 private fun HomeBottomBar(tab: HomeTab, onSelectTab: (HomeTab) -> Unit) {
-    NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
+    NavigationBar(
+        containerColor = JohnTheme.barColor,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    ) {
         NavigationBarItem(
             selected = tab == HomeTab.RECENTS,
             onClick = { onSelectTab(HomeTab.RECENTS) },
@@ -237,6 +242,7 @@ private fun HomeBottomBar(tab: HomeTab, onSelectTab: (HomeTab) -> Unit) {
             },
             label = { Text("Recentes", style = MaterialTheme.typography.labelMedium) },
             alwaysShowLabel = true,
+            colors = johnNavigationBarItemColors(),
         )
         NavigationBarItem(
             selected = tab == HomeTab.ALL,
@@ -250,6 +256,7 @@ private fun HomeBottomBar(tab: HomeTab, onSelectTab: (HomeTab) -> Unit) {
             },
             label = { Text("Todos os PDFs", style = MaterialTheme.typography.labelMedium) },
             alwaysShowLabel = true,
+            colors = johnNavigationBarItemColors(),
         )
     }
 }
@@ -385,8 +392,8 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         shape = RoundedCornerShape(28.dp),
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedContainerColor = JohnTheme.dialogColor,
+            unfocusedContainerColor = JohnTheme.dialogColor,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
@@ -445,8 +452,9 @@ private fun ListDivider() = HorizontalDivider(
 )
 
 /**
- * Linha de lista de 72dp inteira clicável. `errorContainer`/`onErrorContainer` é o "vermelho
- * suave de PDF" da spec §5.2 — um papel que já existe em claro e escuro, sem cor solta no código.
+ * Linha de lista de 72dp inteira clicável. O "vermelho suave de PDF" da spec §5.2 tem papel
+ * próprio (`JohnColors.pdfIcon`/`pdfIconContainer`, 4,92:1 no claro e 6,26:1 no escuro) em vez
+ * de tomar emprestado o `errorContainer`: o ícone do arquivo não é uma mensagem de erro.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -463,13 +471,13 @@ private fun PdfListItem(name: String, subtitle: String, onClick: () -> Unit, onL
                 Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colorScheme.errorContainer),
+                    .background(JohnTheme.colors.pdfIconContainer),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     JohnIcons.PictureAsPdf,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onErrorContainer,
+                    tint = JohnTheme.colors.pdfIcon,
                     modifier = Modifier.size(24.dp),
                 )
             }
