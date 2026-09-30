@@ -9,13 +9,30 @@
 
 ## 0. Implementation Status (as of 2026-09-30)
 
-### ✅ Completed (Commit a03c025)
+### ✅ Completed
 
+**Commit a03c025 — Data + UI layer (initial)**
 - **UpdateRepository** (`data/UpdateRepository.kt`): GitHub API client with 24h cache, silent-fail on errors
 - **UpdateAvailableDialog** (`ui/common/Dialogs.kt`): Material3 AlertDialog, theme-aware, links to release page
-- **HomeScreen integration**: Checks for update on launch, shows dialog if remote > local (1)
+- **HomeScreen integration**: Shows dialog if remote > local (1)
 - **AppContainer**: Injects `updates` repository
 - **INTERNET permission**: Added to manifest
+
+**Commit ed1e2a0 — Manual check + auto-toggle (final)**
+- **UpdateSettingsDialog** (`ui/common/Dialogs.kt`): Settings dialog with:
+  - **"Verificar agora"** button for on-demand check
+  - **Toggle** for automatic checks (default: disabled)
+- **SettingsRepository** enhancement: `autoCheckUpdates` preference stored in DataStore
+- **HomeScreen TopBar**: Schedule icon opens Settings dialog
+- **LaunchedEffect** respects toggle: only checks if `autoCheckUpdates == true`
+
+### ✅ Design Decision: Manual check as default
+
+**Why disabled by default:**
+- Opensource project with infrequent updates (bugs/success-driven)
+- INTERNET permission visible but justified: explicit user action only
+- Transparent: user can audit code, toggle easily accessible
+- No telemetry, no background checks, no silent network calls
 
 ### ⏳ Pending (Phase 2, requires keystore recovery)
 
@@ -25,9 +42,10 @@
 
 ### ℹ️ Notes
 
-- Currently hardcoded version comparison: remote > 1. Will use BuildConfig.VERSION_CODE after versionCode derivation from tags (Phase 2).
+- Currently hardcoded version comparison: remote > 1. Will use BuildConfig.VERSION_CODE after versioncode derivation from tags (Phase 2).
 - Network/parse errors are silently handled; user can dismiss dialog.
 - `latest.json` published by CI will include SHA-256 checksums for future Path B (in-app downloader).
+- INTERNET permission now has strong justification: on-demand GitHub API checks, user-controlled.
 
 ---
 
