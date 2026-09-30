@@ -5,9 +5,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -18,7 +20,15 @@ import java.net.URL
 
 interface UpdateCheck {
     val remoteVersion: Flow<RemoteVersion?>
-    suspend fun checkForUpdate()
+
+    /** Version code of the running build, in the same encoding as [RemoteVersion.versionCode]. */
+    val currentVersionCode: Int
+
+    /**
+     * Fetches the latest release and returns it, or null when no check ran or it failed.
+     * Pass [force] to bypass the throttling interval (manual "check now").
+     */
+    suspend fun checkForUpdate(force: Boolean = false): RemoteVersion?
 }
 
 @Serializable
@@ -43,6 +53,7 @@ private data class GitHubRelease(
 
 class UpdateRepository(
     private val dataStore: DataStore<Preferences>,
+    currentVersionName: String,
     private val repoOwner: String = "JohnGabie",
     private val repoName: String = "johnPDF",
     private val checkIntervalMs: Long = 24 * 60 * 60 * 1000, // 24 hours
@@ -51,30 +62,32 @@ class UpdateRepository(
         prefs[REMOTE_VERSION]?.let { parseRemoteVersion(it) }
     }
 
-    override suspend fun checkForUpdate() {
-        val now = System.currentTimeMillis()
-        var shouldCheck = false
+    override val currentVersionCode: Int = parseVersionCode(currentVersionName)
 
-        dataStore.data.map { it[LAST_CHECK_TIME] ?: 0L }.collect { lastCheck ->
-            shouldCheck = (now - lastCheck >= checkIntervalMs)
+    override suspend fun checkForUpdate(force: Boolean): RemoteVersion? {
+        val now = System.currentTimeMillis()
+        // NOTE: must be first(), not collect() - dataStore.data never completes.
+        val prefs = dataStore.data.first()
+        val lastCheck = prefs[LAST_CHECK_TIME] ?: 0L
+
+        if (!force && now - lastCheck < checkIntervalMs) {
+            // Throttled: reuse whatever we already know.
+            return prefs[REMOTE_VERSION]?.let { parseRemoteVersion(it) }
         }
 
-        if (!shouldCheck) return
-
-        try {
-            val result = withTimeoutOrNull(15_000L) {
-                fetchLatestRelease()
+        return try {
+            val release = withTimeoutOrNull(15_000L) {
+                withContext(Dispatchers.IO) { fetchLatestRelease() }
             }
 
-            if (result == null) {
-                // Timeout occurred
-                return
+            if (release == null) {
+                // Timed out; record the attempt so we don't hammer the API.
+                dataStore.edit { it[LAST_CHECK_TIME] = now }
+                return null
             }
 
-            val release = result
-            val versionCode = parseVersionCode(release.tagName)
             val remote = RemoteVersion(
-                versionCode = versionCode,
+                versionCode = parseVersionCode(release.tagName),
                 versionName = release.tagName.removePrefix("v"),
                 downloadUrl = "https://github.com/$repoOwner/$repoName/releases/tag/${release.tagName}",
             )
@@ -82,14 +95,16 @@ class UpdateRepository(
                 it[REMOTE_VERSION] = serializeRemoteVersion(remote)
                 it[LAST_CHECK_TIME] = now
             }
+            remote
         } catch (e: Exception) {
-            // Silently fail; network error, timeout, or parse error
-            // Update check time anyway to avoid repeated checks on failure
+            // Network error or parse error. Record the attempt to avoid repeated checks.
+            android.util.Log.w("UpdateRepository", "Update check failed", e)
             dataStore.edit { it[LAST_CHECK_TIME] = now }
+            null
         }
     }
 
-    private suspend fun fetchLatestRelease(): GitHubRelease {
+    private fun fetchLatestRelease(): GitHubRelease {
         val url = URL("https://api.github.com/repos/$repoOwner/$repoName/releases/latest")
         val connection = (url.openConnection() as HttpURLConnection)
         connection.connectTimeout = 8_000
@@ -100,8 +115,9 @@ class UpdateRepository(
             val responseCode = connection.responseCode
             if (responseCode != 200) throw Exception("HTTP $responseCode")
 
-            val json = connection.inputStream.bufferedReader().use { it.readText() }
-            return Json.decodeFromString<GitHubRelease>(json)
+            val body = connection.inputStream.bufferedReader().use { it.readText() }
+            // The release payload has many fields we don't model, so unknown keys must be ignored.
+            return JSON.decodeFromString<GitHubRelease>(body)
         } catch (e: SocketTimeoutException) {
             throw Exception("Timeout ao verificar atualizações", e)
         } finally {
@@ -143,5 +159,6 @@ class UpdateRepository(
     private companion object {
         val REMOTE_VERSION = stringPreferencesKey("remote_version")
         val LAST_CHECK_TIME = longPreferencesKey("last_check_time")
+        val JSON = Json { ignoreUnknownKeys = true }
     }
 }

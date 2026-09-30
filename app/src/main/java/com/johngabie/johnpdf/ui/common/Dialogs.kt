@@ -137,7 +137,12 @@ fun PasswordDialog(wrongAttempt: Boolean, onSubmit: (String) -> Unit, onCancel: 
 }
 
 @Composable
-fun UpdateAvailableDialog(current: RemoteVersion, onDismiss: () -> Unit, onOpenLink: (String) -> Unit) {
+fun UpdateAvailableDialog(
+    current: RemoteVersion,
+    currentVersionName: String,
+    onDismiss: () -> Unit,
+    onOpenLink: (String) -> Unit,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = JohnTheme.dialogColor,
@@ -147,7 +152,7 @@ fun UpdateAvailableDialog(current: RemoteVersion, onDismiss: () -> Unit, onOpenL
         title = { Text("Atualização disponível", style = MaterialTheme.typography.titleLarge) },
         text = {
             Text(
-                "Versão atual: 1.0\nNova versão: ${current.versionName}",
+                "Versão atual: $currentVersionName\nNova versão: ${current.versionName}",
                 style = MaterialTheme.typography.bodyLarge,
             )
         },

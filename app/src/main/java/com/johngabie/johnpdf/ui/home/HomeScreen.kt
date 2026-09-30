@@ -80,6 +80,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.johngabie.johnpdf.AppContainer
+import com.johngabie.johnpdf.BuildConfig
 import com.johngabie.johnpdf.data.PdfFile
 import com.johngabie.johnpdf.data.RecentItem
 import com.johngabie.johnpdf.data.StorageAccess
@@ -147,9 +148,13 @@ fun HomeScreen(viewModel: HomeViewModel, container: AppContainer) {
         onPauseOrDispose { }
     }
 
-    if (remoteVersion != null && remoteVersion!!.versionCode > 1 && dismissedVersion != remoteVersion!!.versionCode) {
+    if (remoteVersion != null &&
+        remoteVersion!!.versionCode > container.updates.currentVersionCode &&
+        dismissedVersion != remoteVersion!!.versionCode
+    ) {
         UpdateAvailableDialog(
             current = remoteVersion!!,
+            currentVersionName = BuildConfig.VERSION_NAME,
             onDismiss = { dismissedVersion = remoteVersion!!.versionCode },
             onOpenLink = { url ->
                 try {
@@ -170,9 +175,9 @@ fun HomeScreen(viewModel: HomeViewModel, container: AppContainer) {
             onCheckNow = { onResult ->
                 dismissedVersion = null
                 scope.launch {
-                    container.updates.checkForUpdate()
-                    val hasUpdate = remoteVersion != null && remoteVersion!!.versionCode > 1
-                    onResult(hasUpdate)
+                    // Use the returned value: the collected State has not recomposed yet.
+                    val remote = container.updates.checkForUpdate(force = true)
+                    onResult(remote != null && remote.versionCode > container.updates.currentVersionCode)
                 }
             },
             onDismiss = { showUpdateSettings = false },

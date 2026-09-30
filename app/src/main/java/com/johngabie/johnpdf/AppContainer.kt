@@ -19,7 +19,7 @@ class AppContainer(context: Context) {
     val importer = ImportRepository(app.contentResolver, File(app.filesDir, "imports"))
     val library = PdfLibraryRepository(app.contentResolver)
     val settings = SettingsRepository(app.settingsDataStore)
-    val updates = UpdateRepository(app.settingsDataStore)
+    val updates = UpdateRepository(app.settingsDataStore, BuildConfig.VERSION_NAME)
     val openPdf = OpenPdfUseCase(importer, recents)
     fun hasFilesAccess(): Boolean = StorageAccess.hasAllFilesAccess(app)
 }
