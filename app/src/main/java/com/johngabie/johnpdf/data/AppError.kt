@@ -1,9 +1,13 @@
 package com.johngabie.johnpdf.data
 
-enum class AppError(val message: String) {
-    CORRUPTED("Não foi possível abrir este arquivo."),
-    GONE("Este arquivo não está mais disponível."),
-    NO_SPACE("Sem espaço no celular para abrir este arquivo."),
+import androidx.annotation.StringRes
+import com.johngabie.johnpdf.R
+
+enum class AppError(@StringRes val messageRes: Int) {
+    CORRUPTED(R.string.error_corrupted),
+    GONE(R.string.error_gone),
+    NO_SPACE(R.string.error_no_space),
 }
 
-const val PAGE_RENDER_FAILED_MESSAGE = "Não foi possível mostrar esta página."
+@get:StringRes
+val PAGE_RENDER_FAILED_MESSAGE: Int get() = R.string.error_page_render

@@ -22,28 +22,28 @@ class ButtonsTest {
 
     @Test fun primary_button_is_clickable_and_at_least_56dp_tall() {
         var clicked = false
-        rule.setContent { JohnPdfTheme { PrimaryButton("Permitir acesso", onClick = { clicked = true }) } }
-        rule.onNodeWithText("Permitir acesso").assertHeightIsAtLeast(56.dp).performClick()
+        rule.setContent { JohnPdfTheme { PrimaryButton("Allow access", onClick = { clicked = true }) } }
+        rule.onNodeWithText("Allow access").assertHeightIsAtLeast(56.dp).performClick()
         assertTrue(clicked)
     }
 
     @Test fun secondary_button_default_height_is_56dp() {
-        rule.setContent { JohnPdfTheme { SecondaryButton("Abrir", onClick = {}) } }
-        rule.onNodeWithText("Abrir").assertHeightIsAtLeast(56.dp)
+        rule.setContent { JohnPdfTheme { SecondaryButton("Open", onClick = {}) } }
+        rule.onNodeWithText("Open").assertHeightIsAtLeast(56.dp)
     }
 
     @Test fun secondary_button_accepts_48dp_height_override() {
-        rule.setContent { JohnPdfTheme { SecondaryButton("Abrir", onClick = {}, height = 48.dp) } }
-        rule.onNodeWithText("Abrir").assertHeightIsAtLeast(48.dp)
+        rule.setContent { JohnPdfTheme { SecondaryButton("Open", onClick = {}, height = 48.dp) } }
+        rule.onNodeWithText("Open").assertHeightIsAtLeast(48.dp)
     }
 
     @Test fun disabled_primary_button_stays_visible_and_not_clickable() {
-        rule.setContent { JohnPdfTheme { PrimaryButton("Remover", onClick = {}, enabled = false) } }
-        rule.onNodeWithText("Remover").assertIsDisplayed().assertIsNotEnabled()
+        rule.setContent { JohnPdfTheme { PrimaryButton("Remove", onClick = {}, enabled = false) } }
+        rule.onNodeWithText("Remove").assertIsDisplayed().assertIsNotEnabled()
     }
 
     @Test fun only_one_primary_button_tagged_per_surface() {
-        rule.setContent { JohnPdfTheme { PrimaryButton("Remover", onClick = {}) } }
+        rule.setContent { JohnPdfTheme { PrimaryButton("Remove", onClick = {}) } }
         rule.onAllNodesWithTag("primary_button").assertCountEquals(1)
     }
 }

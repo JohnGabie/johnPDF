@@ -73,6 +73,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.TransformOrigin
@@ -94,6 +95,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.johngabie.johnpdf.R
 import com.johngabie.johnpdf.data.PAGE_RENDER_FAILED_MESSAGE
 import com.johngabie.johnpdf.engine.PageSize
 import com.johngabie.johnpdf.ui.common.ErrorDialog
@@ -157,6 +159,9 @@ fun ReaderContent(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    // Resolved here: showSnackbar runs in a coroutine, which cannot call stringResource.
+    val rotationLockedMsg = stringResource(R.string.rotation_locked_message)
+    val rotationAutoMsg = stringResource(R.string.rotation_auto_message)
     val status = state.status
     // Toque simples no PDF esconde/mostra as barras (mais área de leitura, sobretudo em paisagem).
     var barsVisible by rememberSaveable { mutableStateOf(true) }
@@ -179,7 +184,7 @@ fun ReaderContent(
                         scope.launch {
                             snackbarHostState.currentSnackbarData?.dismiss() // toques rápidos não enfileiram
                             snackbarHostState.showSnackbar(
-                                message = if (willBeLocked) "Tela travada nesta posição" else "Rotação automática",
+                                message = if (willBeLocked) rotationLockedMsg else rotationAutoMsg,
                                 duration = SnackbarDuration.Short,
                             )
                         }
@@ -197,7 +202,7 @@ fun ReaderContent(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     CircularProgressIndicator()
-                    Text("Abrindo…", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.opening), style = MaterialTheme.typography.bodyLarge)
                 }
                 is ReaderStatus.NeedsPassword -> PasswordDialog(status.wrongAttempt, onSubmitPassword, onCancel = onBack)
                 is ReaderStatus.Failed -> ErrorDialog(status.error, onDismiss = onBack)
@@ -263,7 +268,7 @@ private fun ReaderTopBar(
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onBack, modifier = Modifier.size(48.dp)) {
-                Icon(JohnIcons.ArrowBack, contentDescription = "Voltar")
+                Icon(JohnIcons.ArrowBack, contentDescription = stringResource(R.string.action_back))
             }
         },
         title = {
@@ -284,15 +289,16 @@ private fun ReaderTopBar(
 private fun RotationLockAction(locked: Boolean, onToggle: () -> Unit) {
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-        tooltip = { PlainTooltip { Text(if (locked) "Destravar rotação" else "Travar rotação") } },
+        tooltip = { PlainTooltip { Text(stringResource(if (locked) R.string.unlock_rotation else R.string.lock_rotation)) } },
         state = rememberTooltipState(),
     ) {
+        val rotationState = stringResource(if (locked) R.string.rotation_locked else R.string.rotation_automatic)
         IconToggleButton(
             checked = locked,
             onCheckedChange = { onToggle() },
             modifier = Modifier
                 .size(48.dp)
-                .semantics { stateDescription = if (locked) "Travada" else "Automática" },
+                .semantics { stateDescription = rotationState },
             colors = IconButtonDefaults.iconToggleButtonColors(
                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 checkedContentColor = MaterialTheme.colorScheme.onSurface,
@@ -301,7 +307,7 @@ private fun RotationLockAction(locked: Boolean, onToggle: () -> Unit) {
         ) {
             Icon(
                 if (locked) JohnIcons.ScreenLockRotation else JohnIcons.ScreenRotation,
-                contentDescription = "Travar rotação da tela",
+                contentDescription = stringResource(R.string.lock_screen_rotation),
                 modifier = Modifier.size(24.dp),
             )
         }
@@ -455,14 +461,14 @@ private fun PageList(
                     enabled = currentPage > 0,
                     modifier = Modifier.size(PrimaryTouchTarget),
                 ) {
-                    Icon(JohnIcons.KeyboardArrowUp, contentDescription = "Página anterior")
+                    Icon(JohnIcons.KeyboardArrowUp, contentDescription = stringResource(R.string.previous_page))
                 }
                 FilledTonalIconButton(
                     onClick = onNext,
                     enabled = currentPage < totalPages - 1,
                     modifier = Modifier.size(PrimaryTouchTarget),
                 ) {
-                    Icon(JohnIcons.KeyboardArrowDown, contentDescription = "Próxima página")
+                    Icon(JohnIcons.KeyboardArrowDown, contentDescription = stringResource(R.string.next_page))
                 }
             }
         }
@@ -475,7 +481,7 @@ private fun PageList(
             exit = fadeOut(),
         ) {
             Text(
-                pageLabel(currentPage, totalPages),
+                stringResource(R.string.page_of_total, currentPage + 1, totalPages),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             )
@@ -581,12 +587,12 @@ private fun PdfPage(index: Int, size: PageSize, widthPx: Int, renderPage: suspen
             when (val img = image) {
                 is PageImage.Loaded -> Image(
                     img.image,
-                    contentDescription = "Página ${index + 1}",
+                    contentDescription = stringResource(R.string.page_number, index + 1),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.FillBounds,
                 )
                 PageImage.Failed -> Text(
-                    PAGE_RENDER_FAILED_MESSAGE,
+                    stringResource(PAGE_RENDER_FAILED_MESSAGE),
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(SpaceL),

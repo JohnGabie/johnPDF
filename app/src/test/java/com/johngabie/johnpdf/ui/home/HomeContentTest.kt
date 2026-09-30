@@ -68,9 +68,9 @@ class HomeContentTest {
         val header = rule.onNodeWithTag("open_pdf_header").getBoundsInRoot()
         assertTrue("o botão saiu do topo da tela: $header", header.bottom < root.height / 4f)
 
-        val total = rule.onAllNodesWithText("Abrir PDF").fetchSemanticsNodes().size
+        val total = rule.onAllNodesWithText("Open PDF").fetchSemanticsNodes().size
         repeat(total) { i ->
-            val b = rule.onAllNodesWithText("Abrir PDF")[i].getBoundsInRoot()
+            val b = rule.onAllNodesWithText("Open PDF")[i].getBoundsInRoot()
             val noCantoInferiorDireito = b.top > root.height * 0.75f && b.right > root.width * 0.5f
             assertFalse("há um 'Abrir PDF' flutuando no canto inferior direito: $b", noCantoInferiorDireito)
         }
@@ -78,9 +78,9 @@ class HomeContentTest {
 
     @Test fun barra_inferior_troca_de_aba_com_rotulos_sempre_visiveis() {
         show(HomeUiState())
-        rule.onNodeWithText("Recentes").assertIsDisplayed()
-        rule.onNodeWithText("Todos os PDFs").assertIsDisplayed()
-        rule.onNodeWithText("Todos os PDFs").performClick()
+        rule.onNodeWithText("Recents").assertIsDisplayed()
+        rule.onNodeWithText("All PDFs").assertIsDisplayed()
+        rule.onNodeWithText("All PDFs").performClick()
         assertEquals(listOf("tab:ALL"), events)
     }
 
@@ -95,16 +95,16 @@ class HomeContentTest {
 
     @Test fun recentes_vazio_mostra_estado_com_acao() {
         show(HomeUiState())
-        rule.onNodeWithText("Nenhum PDF aberto ainda").assertIsDisplayed()
-        rule.onNodeWithText("Os PDFs que você abrir vão aparecer aqui.").assertIsDisplayed()
+        rule.onNodeWithText("No PDFs opened yet").assertIsDisplayed()
+        rule.onNodeWithText("The PDFs you open will show up here.").assertIsDisplayed()
         rule.onNodeWithTag("empty_state_action").performClick()
         assertEquals(listOf("picker"), events)
     }
 
     @Test fun biblioteca_vazia_mostra_estado_com_acao() {
         show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = true))
-        rule.onNodeWithText("Nenhum PDF no celular").assertIsDisplayed()
-        rule.onNodeWithText("Nenhum PDF encontrado no celular.").assertIsDisplayed()
+        rule.onNodeWithText("No PDFs on this phone").assertIsDisplayed()
+        rule.onNodeWithText("No PDFs found on this phone.").assertIsDisplayed()
     }
 
     @Test fun linha_da_lista_tem_72dp_e_e_clicavel_inteira() {
@@ -117,19 +117,19 @@ class HomeContentTest {
 
     @Test fun busca_vazia_nao_mostra_botao_de_limpar() {
         show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = true))
-        rule.onNodeWithText("Buscar PDFs").assertIsDisplayed()
-        rule.onNodeWithContentDescription("Limpar busca").assertDoesNotExist()
+        rule.onNodeWithText("Search PDFs").assertIsDisplayed()
+        rule.onNodeWithContentDescription("Clear search").assertDoesNotExist()
     }
 
     @Test fun botao_de_limpar_zera_a_busca() {
         show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = true, query = "bol"))
-        rule.onNodeWithContentDescription("Limpar busca").performClick()
+        rule.onNodeWithContentDescription("Clear search").performClick()
         assertEquals(listOf("query:"), events)
     }
 
     @Test fun recent_card_shows_origin_and_date_and_opens() {
         show(HomeUiState(recents = listOf(recent)))
-        rule.onNodeWithText("WhatsApp · hoje").assertIsDisplayed()
+        rule.onNodeWithText("WhatsApp · today").assertIsDisplayed()
         rule.onNodeWithText("Fatura.pdf").performClick()
         assertEquals(listOf("recent:Fatura.pdf"), events)
     }
@@ -137,17 +137,17 @@ class HomeContentTest {
     @Test fun long_press_asks_before_removing() {
         show(HomeUiState(recents = listOf(recent)))
         rule.onNodeWithText("Fatura.pdf").performTouchInput { longClick() }
-        rule.onNodeWithText("Remover da lista?").assertIsDisplayed()
-        rule.onNodeWithText("O arquivo continua no celular.").assertIsDisplayed()
-        rule.onNodeWithText("Remover").performClick()
+        rule.onNodeWithText("Remove from list?").assertIsDisplayed()
+        rule.onNodeWithText("The file stays on your phone.").assertIsDisplayed()
+        rule.onNodeWithText("Remove").performClick()
         assertEquals(listOf("remove:Fatura.pdf"), events)
     }
 
     @Test fun aba_todos_sem_permissao_pede_acesso() {
         show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = false))
-        rule.onNodeWithText("Para mostrar os PDFs do celular, o johnPDF precisa de permissão.").assertIsDisplayed()
-        rule.onNodeWithText("1. Toque em Permitir acesso\n2. Ative a opção do johnPDF\n3. Volte para o app").assertIsDisplayed()
-        rule.onNodeWithText("Permitir acesso").performClick()
+        rule.onNodeWithText("To show the PDFs on your phone, johnPDF needs permission.").assertIsDisplayed()
+        rule.onNodeWithText("1. Tap Allow access\n2. Turn on johnPDF\n3. Come back to the app").assertIsDisplayed()
+        rule.onNodeWithText("Allow access").performClick()
         assertEquals(listOf("permission"), events)
     }
 
@@ -167,14 +167,14 @@ class HomeContentTest {
 
     @Test fun busca_sem_resultado_nao_oferece_acao() {
         show(HomeUiState(tab = HomeTab.ALL, hasFilesAccess = true, query = "zzz"))
-        rule.onNodeWithText("Nada encontrado").assertIsDisplayed()
-        rule.onNodeWithText("Nenhum PDF com esse nome.").assertIsDisplayed()
+        rule.onNodeWithText("Nothing found").assertIsDisplayed()
+        rule.onNodeWithText("No PDF with that name.").assertIsDisplayed()
         rule.onNodeWithTag("empty_state_action").assertDoesNotExist()
     }
 
     @Test fun error_dialog_is_shown() {
         show(HomeUiState(error = AppError.NO_SPACE))
-        rule.onNodeWithText("Sem espaço no celular para abrir este arquivo.").assertIsDisplayed()
+        rule.onNodeWithText("Not enough space on your phone to open this file.").assertIsDisplayed()
         rule.onNodeWithText("OK").performClick()
         assertEquals(listOf("dismiss"), events)
     }

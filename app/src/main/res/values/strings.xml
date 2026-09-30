@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default (English) strings. Any system language that is not Portuguese lands here.
+  Portuguese lives in values-pt/strings.xml.
+-->
+<resources>
+
+    <!-- Actions -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_open">Open</string>
+    <string name="action_close">Close</string>
+    <string name="action_later">Later</string>
+    <string name="action_download">Download</string>
+    <string name="action_allow">Allow</string>
+    <string name="action_back">Back</string>
+
+    <!-- Home -->
+    <string name="open_pdf">Open PDF</string>
+    <string name="update_settings">Update settings</string>
+    <string name="switch_theme">Switch theme</string>
+    <string name="theme_system">Following the system</string>
+    <string name="theme_light">Light theme</string>
+    <string name="theme_dark">Dark theme</string>
+    <string name="tab_recents">Recents</string>
+    <string name="tab_all_pdfs">All PDFs</string>
+    <string name="search_pdfs">Search PDFs</string>
+    <string name="clear_search">Clear search</string>
+    <string name="dont_ask_again">Don\'t ask again</string>
+
+    <!-- Empty states -->
+    <string name="empty_recents_title">No PDFs opened yet</string>
+    <string name="empty_recents_body">The PDFs you open will show up here.</string>
+    <string name="empty_library_title">No PDFs on this phone</string>
+    <string name="empty_library_body">No PDFs found on this phone.</string>
+    <string name="empty_search_title">Nothing found</string>
+    <string name="empty_search_body">No PDF with that name.</string>
+
+    <!-- Storage permission -->
+    <string name="permission_rationale">To show the PDFs on your phone, johnPDF needs permission.</string>
+    <string name="permission_steps">1. Tap Allow access\n2. Turn on johnPDF\n3. Come back to the app</string>
+    <string name="permission_allow_access">Allow access</string>
+
+    <!-- File source labels -->
+    <string name="origin_whatsapp">WhatsApp</string>
+    <string name="origin_download">Downloads</string>
+    <string name="origin_documents">Documents</string>
+    <string name="origin_other">Other</string>
+
+    <!-- List item subtitle: "Downloads · yesterday" -->
+    <string name="list_subtitle">%1$s · %2$s</string>
+
+    <!-- Dates -->
+    <string name="date_today">today</string>
+    <string name="date_yesterday">yesterday</string>
+    <!-- java.time patterns. Translators: adapt to local date conventions. -->
+    <string name="date_pattern_same_year">MMM d</string>
+    <string name="date_pattern_other_year">MMM d, yyyy</string>
+
+    <!-- Remove from recents -->
+    <string name="remove_from_list_title">Remove from list?</string>
+    <string name="remove_from_list_body">The file stays on your phone.</string>
+
+    <!-- Password-protected PDFs -->
+    <string name="protected_pdf">Protected PDF</string>
+    <string name="password">Password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+    <string name="wrong_password">Wrong password, try again</string>
+    <string name="use_letters">Use letters</string>
+    <string name="use_numbers">Use numbers</string>
+
+    <!-- Updates -->
+    <string name="update_available">Update available</string>
+    <string name="update_versions">Current version: %1$s\nNew version: %2$s</string>
+    <string name="update_check_title">Update check</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_check_now">Check now</string>
+    <string name="update_up_to_date">✓ You\'re on the latest version</string>
+    <string name="update_found">🎉 A new version is available!</string>
+    <string name="update_timeout">⏱️ Check timed out</string>
+    <string name="update_auto_check">Automatic check</string>
+
+    <!-- Errors -->
+    <string name="error_corrupted">This file could not be opened.</string>
+    <string name="error_gone">This file is no longer available.</string>
+    <string name="error_no_space">Not enough space on your phone to open this file.</string>
+    <string name="error_page_render">This page could not be shown.</string>
+
+    <!-- Reader -->
+    <string name="opening">Opening…</string>
+    <string name="rotation_locked_message">Screen locked in this position</string>
+    <string name="rotation_auto_message">Automatic rotation</string>
+    <string name="unlock_rotation">Unlock rotation</string>
+    <string name="lock_rotation">Lock rotation</string>
+    <string name="rotation_locked">Locked</string>
+    <string name="rotation_automatic">Automatic</string>
+    <string name="lock_screen_rotation">Lock screen rotation</string>
+    <string name="previous_page">Previous page</string>
+    <string name="next_page">Next page</string>
+    <string name="page_number">Page %1$d</string>
+    <string name="page_of_total">Page %1$d of %2$d</string>
+
+</resources>

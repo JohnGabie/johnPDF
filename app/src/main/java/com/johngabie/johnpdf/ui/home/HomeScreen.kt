@@ -79,8 +79,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
 import com.johngabie.johnpdf.AppContainer
 import com.johngabie.johnpdf.BuildConfig
+import com.johngabie.johnpdf.R
 import com.johngabie.johnpdf.data.PdfFile
 import com.johngabie.johnpdf.data.RecentItem
 import com.johngabie.johnpdf.data.StorageAccess
@@ -89,6 +91,7 @@ import com.johngabie.johnpdf.ui.common.PrimaryButton
 import com.johngabie.johnpdf.ui.common.RemoveDialog
 import com.johngabie.johnpdf.ui.common.SecondaryButton
 import com.johngabie.johnpdf.ui.common.UpdateAvailableDialog
+import com.johngabie.johnpdf.ui.common.rememberDateLabels
 import com.johngabie.johnpdf.ui.common.UpdateSettingsDialog
 import com.johngabie.johnpdf.ui.icons.JohnIcons
 import com.johngabie.johnpdf.ui.theme.JohnTheme
@@ -253,7 +256,7 @@ fun HomeContent(
 }
 
 /**
- * Ação única "Abrir PDF" nas `actions` do `TopAppBar` — sem FAB (decisão 3 do usuário, spec §1.1a).
+ * Ação única stringResource(R.string.open_pdf) nas `actions` do `TopAppBar` — sem FAB (decisão 3 do usuário, spec §1.1a).
  * 48dp é o piso de toque do M3: o header é uma ação de apoio, não a ação principal da tela.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -271,10 +274,10 @@ private fun HomeTopBar(onOpenPicker: () -> Unit, onOpenUpdateSettings: () -> Uni
         actions = {
             ThemeSwitchAction()
             IconButton(onClick = onOpenUpdateSettings, modifier = Modifier.testTag("update_settings")) {
-                Icon(JohnIcons.Schedule, contentDescription = "Configurações de atualização", modifier = Modifier.size(24.dp))
+                Icon(JohnIcons.Schedule, contentDescription = stringResource(R.string.update_settings), modifier = Modifier.size(24.dp))
             }
             SecondaryButton(
-                text = "Abrir PDF",
+                text = stringResource(R.string.open_pdf),
                 onClick = onOpenPicker,
                 icon = JohnIcons.FolderOpen,
                 height = 48.dp,
@@ -305,9 +308,9 @@ private fun ThemeSwitchAction() {
     val controller = LocalThemeController.current
     val mode = controller.mode
     val (icon, estado) = when (mode) {
-        ThemeMode.SYSTEM -> JohnIcons.BrightnessAuto to "Seguindo o sistema"
-        ThemeMode.LIGHT -> JohnIcons.LightMode to "Tema claro"
-        ThemeMode.DARK -> JohnIcons.DarkMode to "Tema escuro"
+        ThemeMode.SYSTEM -> JohnIcons.BrightnessAuto to stringResource(R.string.theme_system)
+        ThemeMode.LIGHT -> JohnIcons.LightMode to stringResource(R.string.theme_light)
+        ThemeMode.DARK -> JohnIcons.DarkMode to stringResource(R.string.theme_dark)
     }
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
@@ -321,7 +324,7 @@ private fun ThemeSwitchAction() {
                 .semantics { stateDescription = estado }
                 .testTag("theme_switch"),
         ) {
-            Icon(icon, contentDescription = "Trocar o tema", modifier = Modifier.size(24.dp))
+            Icon(icon, contentDescription = stringResource(R.string.switch_theme), modifier = Modifier.size(24.dp))
         }
     }
 }
@@ -346,7 +349,7 @@ private fun HomeBottomBar(tab: HomeTab, onSelectTab: (HomeTab) -> Unit) {
                     modifier = Modifier.size(24.dp).testTag("nav_icon_recents"),
                 )
             },
-            label = { Text("Recentes", style = MaterialTheme.typography.labelMedium) },
+            label = { Text(stringResource(R.string.tab_recents), style = MaterialTheme.typography.labelMedium) },
             alwaysShowLabel = true,
             colors = johnNavigationBarItemColors(),
         )
@@ -360,7 +363,7 @@ private fun HomeBottomBar(tab: HomeTab, onSelectTab: (HomeTab) -> Unit) {
                     modifier = Modifier.size(24.dp).testTag("nav_icon_all"),
                 )
             },
-            label = { Text("Todos os PDFs", style = MaterialTheme.typography.labelMedium) },
+            label = { Text(stringResource(R.string.tab_all_pdfs), style = MaterialTheme.typography.labelMedium) },
             alwaysShowLabel = true,
             colors = johnNavigationBarItemColors(),
         )
@@ -378,20 +381,21 @@ private fun RecentsTab(
     if (items.isEmpty()) {
         EmptyState(
             icon = JohnIcons.Schedule,
-            title = "Nenhum PDF aberto ainda",
-            message = "Os PDFs que você abrir vão aparecer aqui.",
-            actionLabel = "Abrir PDF",
+            title = stringResource(R.string.empty_recents_title),
+            message = stringResource(R.string.empty_recents_body),
+            actionLabel = stringResource(R.string.open_pdf),
             onAction = onOpenPicker,
         )
         return
     }
+    val dateLabels = rememberDateLabels()
     // Sem contentPadding inferior reservando espaço de FAB — a Home não tem FAB (spec §1.1a).
     LazyColumn(contentPadding = PaddingValues(vertical = SpaceS)) {
         itemsIndexed(items, key = { _, item -> item.path }) { index, item ->
             if (index > 0) ListDivider()
             PdfListItem(
                 name = item.name,
-                subtitle = "${item.origin.label} · ${friendlyDate(item.openedAt, nowMillis)}",
+                subtitle = stringResource(R.string.list_subtitle, stringResource(item.origin.labelRes), friendlyDate(item.openedAt, nowMillis, dateLabels)),
                 onClick = { onOpen(item) },
                 onLongClick = { onLongPress(item) },
             )
@@ -409,6 +413,7 @@ private fun AllPdfsTab(
     onOpen: (PdfFile) -> Unit,
     onOpenPicker: () -> Unit,
 ) {
+    val dateLabels = rememberDateLabels()
     Column(Modifier.fillMaxSize()) {
         SearchField(query, onQueryChange)
         when {
@@ -417,14 +422,14 @@ private fun AllPdfsTab(
                 // Busca sem resultado não oferece ação: o caminho de saída é apagar a busca (spec §5.3).
                 if (query.isBlank()) EmptyState(
                     icon = JohnIcons.FolderOpen,
-                    title = "Nenhum PDF no celular",
-                    message = "Nenhum PDF encontrado no celular.",
-                    actionLabel = "Abrir PDF",
+                    title = stringResource(R.string.empty_library_title),
+                    message = stringResource(R.string.empty_library_body),
+                    actionLabel = stringResource(R.string.open_pdf),
                     onAction = onOpenPicker,
                 ) else EmptyState(
                     icon = JohnIcons.SearchOff,
-                    title = "Nada encontrado",
-                    message = "Nenhum PDF com esse nome.",
+                    title = stringResource(R.string.empty_search_title),
+                    message = stringResource(R.string.empty_search_body),
                 )
             else -> LazyColumn(contentPadding = PaddingValues(vertical = SpaceS)) {
                 itemsIndexed(pdfs, key = { _, pdf -> pdf.path }) { index, pdf ->
@@ -432,7 +437,7 @@ private fun AllPdfsTab(
                     // Sem onLongClick: toque longo só em Recentes (spec §5.2).
                     PdfListItem(
                         name = pdf.name,
-                        subtitle = "${pdf.origin.label} · ${friendlyDate(pdf.modifiedAt, nowMillis)}",
+                        subtitle = stringResource(R.string.list_subtitle, stringResource(pdf.origin.labelRes), friendlyDate(pdf.modifiedAt, nowMillis, dateLabels)),
                         onClick = { onOpen(pdf) },
                     )
                 }
@@ -462,19 +467,19 @@ private fun PermissionContent(onRequestPermission: () -> Unit) {
         }
         Spacer(Modifier.height(SpaceXl))
         Text(
-            "Para mostrar os PDFs do celular, o johnPDF precisa de permissão.",
+            stringResource(R.string.permission_rationale),
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.widthIn(max = MaxActionWidth),
         )
         Spacer(Modifier.height(SpaceXl))
         Text(
-            "1. Toque em Permitir acesso\n2. Ative a opção do johnPDF\n3. Volte para o app",
+            stringResource(R.string.permission_steps),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.widthIn(max = MaxActionWidth),
         )
         Spacer(Modifier.height(SpaceXl))
-        PrimaryButton("Permitir acesso", onRequestPermission, Modifier.fillMaxWidth())
+        PrimaryButton(stringResource(R.string.permission_allow_access), onRequestPermission, Modifier.fillMaxWidth())
     }
 }
 
@@ -484,12 +489,12 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
     TextField(
         value = query,
         onValueChange = onQueryChange,
-        placeholder = { Text("Buscar PDFs", style = MaterialTheme.typography.bodyLarge) },
+        placeholder = { Text(stringResource(R.string.search_pdfs), style = MaterialTheme.typography.bodyLarge) },
         leadingIcon = { Icon(JohnIcons.Search, contentDescription = null) },
         trailingIcon = {
             if (query.isNotEmpty()) {
                 IconButton(onClick = { onQueryChange("") }, modifier = Modifier.size(48.dp)) {
-                    Icon(JohnIcons.Close, contentDescription = "Limpar busca")
+                    Icon(JohnIcons.Close, contentDescription = stringResource(R.string.clear_search))
                 }
             }
         },

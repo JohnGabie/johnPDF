@@ -29,4 +29,5 @@ fun dominantPage(pages: List<VisiblePage>, viewportStart: Int, viewportEnd: Int)
         (minOf(p.offset + p.size, viewportEnd) - maxOf(p.offset, viewportStart)).coerceAtLeast(0)
     }?.index
 
-fun pageLabel(current: Int, total: Int): String = "Página ${current + 1} de $total"
+// The page label itself is now a string resource (R.string.page_of_total), formatted at the
+// call site: "Página 3 de 12" and "Page 3 of 12" do not share a word order to build by hand.

@@ -43,5 +43,4 @@ class PageMathTest {
         assertEquals(0, dominantPage(pages, 0, 1000))
     }
     @Test fun empty_returns_null() = assertNull(dominantPage(emptyList(), 0, 1000))
-    @Test fun label_is_one_based() = assertEquals("Página 3 de 12", pageLabel(2, 12))
 }

@@ -29,9 +29,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.johngabie.johnpdf.R
 import com.johngabie.johnpdf.data.AppError
 import com.johngabie.johnpdf.data.RemoteVersion
 import com.johngabie.johnpdf.ui.icons.JohnIcons
@@ -48,9 +50,9 @@ fun ErrorDialog(error: AppError, onDismiss: () -> Unit) {
         textContentColor = MaterialTheme.colorScheme.onSurface,
         iconContentColor = MaterialTheme.colorScheme.error,
         icon = { Icon(JohnIcons.Error, contentDescription = null) },
-        text = { Text(error.message, style = MaterialTheme.typography.bodyLarge) },
+        text = { Text(stringResource(error.messageRes), style = MaterialTheme.typography.bodyLarge) },
         // É um aviso, não uma ação — não merece um botão Filled (spec §7).
-        confirmButton = { TextButton(onClick = onDismiss) { Text("OK", style = MaterialTheme.typography.labelLarge) } },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_ok), style = MaterialTheme.typography.labelLarge) } },
     )
 }
 
@@ -67,10 +69,10 @@ fun RemoveDialog(onConfirm: () -> Unit, onCancel: () -> Unit) {
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurface,
         icon = { Icon(JohnIcons.Delete, contentDescription = null) },
-        title = { Text("Remover da lista?", style = MaterialTheme.typography.titleLarge) },
-        text = { Text("O arquivo continua no celular.", style = MaterialTheme.typography.bodyLarge) },
-        confirmButton = { PrimaryButton("Remover", onConfirm) },
-        dismissButton = { TextButton(onClick = onCancel) { Text("Cancelar", style = MaterialTheme.typography.labelLarge) } },
+        title = { Text(stringResource(R.string.remove_from_list_title), style = MaterialTheme.typography.titleLarge) },
+        text = { Text(stringResource(R.string.remove_from_list_body), style = MaterialTheme.typography.bodyLarge) },
+        confirmButton = { PrimaryButton(stringResource(R.string.action_remove), onConfirm) },
+        dismissButton = { TextButton(onClick = onCancel) { Text(stringResource(R.string.action_cancel), style = MaterialTheme.typography.labelLarge) } },
     )
 }
 
@@ -85,13 +87,13 @@ fun PasswordDialog(wrongAttempt: Boolean, onSubmit: (String) -> Unit, onCancel: 
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurface,
         icon = { Icon(JohnIcons.Lock, contentDescription = null) },
-        title = { Text("PDF protegido", style = MaterialTheme.typography.titleLarge) },
+        title = { Text(stringResource(R.string.protected_pdf), style = MaterialTheme.typography.titleLarge) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(SpaceM)) {
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Senha") },
+                    label = { Text(stringResource(R.string.password)) },
                     singleLine = true,
                     textStyle = MaterialTheme.typography.bodyLarge,
                     visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -99,7 +101,7 @@ fun PasswordDialog(wrongAttempt: Boolean, onSubmit: (String) -> Unit, onCancel: 
                         IconButton(onClick = { visible = !visible }) {
                             Icon(
                                 if (visible) JohnIcons.VisibilityOff else JohnIcons.Visibility,
-                                contentDescription = if (visible) "Ocultar senha" else "Mostrar senha",
+                                contentDescription = stringResource(if (visible) R.string.hide_password else R.string.show_password),
                             )
                         }
                     },
@@ -119,7 +121,7 @@ fun PasswordDialog(wrongAttempt: Boolean, onSubmit: (String) -> Unit, onCancel: 
                 )
                 if (wrongAttempt) {
                     Text(
-                        "Senha incorreta, tente de novo",
+                        stringResource(R.string.wrong_password),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyLarge,
                     )
@@ -127,12 +129,12 @@ fun PasswordDialog(wrongAttempt: Boolean, onSubmit: (String) -> Unit, onCancel: 
                 TextButton(onClick = { numeric = !numeric }) {
                     Icon(if (numeric) JohnIcons.Keyboard else JohnIcons.Dialpad, contentDescription = null)
                     Spacer(Modifier.width(SpaceXs))
-                    Text(if (numeric) "Usar letras" else "Usar números", style = MaterialTheme.typography.labelLarge)
+                    Text(stringResource(if (numeric) R.string.use_letters else R.string.use_numbers), style = MaterialTheme.typography.labelLarge)
                 }
             }
         },
-        confirmButton = { PrimaryButton("Abrir", onClick = { onSubmit(password) }, enabled = password.isNotEmpty()) },
-        dismissButton = { TextButton(onClick = onCancel) { Text("Cancelar", style = MaterialTheme.typography.labelLarge) } },
+        confirmButton = { PrimaryButton(stringResource(R.string.action_open), onClick = { onSubmit(password) }, enabled = password.isNotEmpty()) },
+        dismissButton = { TextButton(onClick = onCancel) { Text(stringResource(R.string.action_cancel), style = MaterialTheme.typography.labelLarge) } },
     )
 }
 
@@ -149,15 +151,15 @@ fun UpdateAvailableDialog(
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurface,
         icon = { Icon(JohnIcons.ScreenRotation, contentDescription = null) },
-        title = { Text("Atualização disponível", style = MaterialTheme.typography.titleLarge) },
+        title = { Text(stringResource(R.string.update_available), style = MaterialTheme.typography.titleLarge) },
         text = {
             Text(
-                "Versão atual: $currentVersionName\nNova versão: ${current.versionName}",
+                stringResource(R.string.update_versions, currentVersionName, current.versionName),
                 style = MaterialTheme.typography.bodyLarge,
             )
         },
-        confirmButton = { PrimaryButton("Download", onClick = { onOpenLink(current.downloadUrl) }) },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Depois", style = MaterialTheme.typography.labelLarge) } },
+        confirmButton = { PrimaryButton(stringResource(R.string.action_download), onClick = { onOpenLink(current.downloadUrl) }) },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_later), style = MaterialTheme.typography.labelLarge) } },
     )
 }
 
@@ -170,13 +172,17 @@ fun UpdateSettingsDialog(
 ) {
     var isChecking by remember { mutableStateOf(false) }
     var feedback by remember { mutableStateOf<String?>(null) }
+    // Resolved up front: the callbacks below are not composable and cannot call stringResource.
+    val timeoutMsg = stringResource(R.string.update_timeout)
+    val foundMsg = stringResource(R.string.update_found)
+    val upToDateMsg = stringResource(R.string.update_up_to_date)
 
     LaunchedEffect(isChecking) {
         if (isChecking) {
             kotlinx.coroutines.delay(15_000)
             if (isChecking) {
                 isChecking = false
-                feedback = "⏱️ Timeout ao verificar"
+                feedback = timeoutMsg
             }
         }
     }
@@ -187,7 +193,7 @@ fun UpdateSettingsDialog(
         titleContentColor = MaterialTheme.colorScheme.onSurface,
         textContentColor = MaterialTheme.colorScheme.onSurface,
         icon = { Icon(JohnIcons.Schedule, contentDescription = null) },
-        title = { Text("Verificação de atualizações", style = MaterialTheme.typography.titleLarge) },
+        title = { Text(stringResource(R.string.update_check_title), style = MaterialTheme.typography.titleLarge) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(SpaceM)) {
                 if (isChecking) {
@@ -198,19 +204,19 @@ fun UpdateSettingsDialog(
                     ) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp))
                         Spacer(Modifier.width(SpaceM))
-                        Text("Verificando...", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.update_checking), style = MaterialTheme.typography.bodyMedium)
                     }
                 } else if (feedback != null) {
                     Text(feedback!!, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
                 } else {
-                    PrimaryButton("Verificar agora", onClick = {
+                    PrimaryButton(stringResource(R.string.update_check_now), onClick = {
                         isChecking = true
                         onCheckNow { hasUpdate ->
                             isChecking = false
                             feedback = if (hasUpdate) {
-                                "🎉 Há uma nova versão disponível!"
+                                foundMsg
                             } else {
-                                "✓ Você está na versão mais recente"
+                                upToDateMsg
                             }
                         }
                     })
@@ -220,11 +226,11 @@ fun UpdateSettingsDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text("Verificação automática", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.update_auto_check), style = MaterialTheme.typography.bodyLarge)
                     Switch(checked = autoCheckUpdates, onCheckedChange = onToggleAutoCheck)
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Fechar", style = MaterialTheme.typography.labelLarge) } },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_close), style = MaterialTheme.typography.labelLarge) } },
     )
 }

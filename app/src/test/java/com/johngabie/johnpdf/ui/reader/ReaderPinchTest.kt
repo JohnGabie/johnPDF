@@ -167,9 +167,9 @@ class ReaderPinchTest {
     /** O zoom aplicado tem que virar largura de página de verdade, não só escala de preview. */
     @Test fun o_zoom_aplicado_alarga_a_pagina_na_mesma_proporcao() {
         show()
-        val antes = rule.onNodeWithContentDescription("Página 1").getUnclippedBoundsInRoot().width
+        val antes = rule.onNodeWithContentDescription("Page 1").getUnclippedBoundsInRoot().width
         pinch(from = 25f, to = 50f)
-        val depois = rule.onNodeWithContentDescription("Página 1").getUnclippedBoundsInRoot().width
+        val depois = rule.onNodeWithContentDescription("Page 1").getUnclippedBoundsInRoot().width
         assertEquals(2f, depois / antes, 0.02f)
     }
 }

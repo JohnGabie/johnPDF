@@ -37,6 +37,7 @@ Reading a PDF is not a premium feature. So I spent two days building this in Kot
 **Interface**
 - Material 3 design, built entirely in Jetpack Compose
 - Light / Dark / Follow-system themes, cycled from a single button in the header
+- English and Portuguese, picked automatically from your system language
 - Optional update check against GitHub Releases — **off by default**, and it only ever tells you a new version exists; it never downloads or installs anything on its own
 
 ## Privacy
@@ -134,9 +135,20 @@ Issues and pull requests are welcome.
 
 A few things worth knowing before you start:
 
-- **The UI is currently Portuguese (pt-BR) only.** Strings are hardcoded in the composables rather than extracted to `strings.xml`. Extracting them and adding English would be a genuinely useful contribution, and a good first issue.
 - Keep it ad-free and tracker-free. Any PR introducing advertising, analytics, or telemetry will be declined — that is the whole point of the project.
 - Run `./gradlew testDebugUnitTest` before opening a PR.
+- No user-facing string belongs in Kotlin. Add it to `res/values/strings.xml` and reference it with `stringResource(...)`.
+
+### Adding a translation
+
+English is the default and Portuguese ships alongside it. To add a language, copy `app/src/main/res/values/strings.xml` into `app/src/main/res/values-<code>/` and translate the values — for example `values-es` for Spanish.
+
+Two entries are formatting patterns rather than prose:
+
+- `date_pattern_same_year` and `date_pattern_other_year` are [`DateTimeFormatter`](https://developer.android.com/reference/java/time/format/DateTimeFormatter) patterns. English uses `MMM d`, Portuguese uses `d 'de' MMM`. Write whatever reads naturally in your language and quote any literal words.
+- Strings containing `%1$s` or `%1$d` keep those placeholders, but you are free to reorder them.
+
+Unit tests run pinned to `en-US` (see `app/src/test/resources/robolectric.properties`), so adding a language never breaks the suite.
 
 ## License
 

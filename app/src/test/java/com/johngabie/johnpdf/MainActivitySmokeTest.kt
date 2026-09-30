@@ -43,9 +43,9 @@ class MainActivitySmokeTest {
 
     @Test
     fun home_starts_on_recents_and_switches_to_all() {
-        rule.onNodeWithText("Os PDFs que você abrir vão aparecer aqui.").assertIsDisplayed()
-        rule.onNodeWithText("Todos os PDFs").performClick()
-        rule.onNodeWithText("Permitir acesso").assertIsDisplayed()
+        rule.onNodeWithText("The PDFs you open will show up here.").assertIsDisplayed()
+        rule.onNodeWithText("All PDFs").performClick()
+        rule.onNodeWithText("Allow access").assertIsDisplayed()
     }
 
     /**

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Portuguese strings. Applies to any Portuguese system language (pt-BR, pt-PT, …).
+  The wording is the original pt-BR text the app shipped with.
+-->
+<resources>
+
+    <!-- Ações -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_remove">Remover</string>
+    <string name="action_open">Abrir</string>
+    <string name="action_close">Fechar</string>
+    <string name="action_later">Depois</string>
+    <string name="action_download">Download</string>
+    <string name="action_allow">Permitir</string>
+    <string name="action_back">Voltar</string>
+
+    <!-- Início -->
+    <string name="open_pdf">Abrir PDF</string>
+    <string name="update_settings">Configurações de atualização</string>
+    <string name="switch_theme">Trocar o tema</string>
+    <string name="theme_system">Seguindo o sistema</string>
+    <string name="theme_light">Tema claro</string>
+    <string name="theme_dark">Tema escuro</string>
+    <string name="tab_recents">Recentes</string>
+    <string name="tab_all_pdfs">Todos os PDFs</string>
+    <string name="search_pdfs">Buscar PDFs</string>
+    <string name="clear_search">Limpar busca</string>
+    <string name="dont_ask_again">Não perguntar de novo</string>
+
+    <!-- Estados vazios -->
+    <string name="empty_recents_title">Nenhum PDF aberto ainda</string>
+    <string name="empty_recents_body">Os PDFs que você abrir vão aparecer aqui.</string>
+    <string name="empty_library_title">Nenhum PDF no celular</string>
+    <string name="empty_library_body">Nenhum PDF encontrado no celular.</string>
+    <string name="empty_search_title">Nada encontrado</string>
+    <string name="empty_search_body">Nenhum PDF com esse nome.</string>
+
+    <!-- Permissão de armazenamento -->
+    <string name="permission_rationale">Para mostrar os PDFs do celular, o johnPDF precisa de permissão.</string>
+    <string name="permission_steps">1. Toque em Permitir acesso\n2. Ative a opção do johnPDF\n3. Volte para o app</string>
+    <string name="permission_allow_access">Permitir acesso</string>
+
+    <!-- Origem dos arquivos -->
+    <string name="origin_whatsapp">WhatsApp</string>
+    <string name="origin_download">Download</string>
+    <string name="origin_documents">Documentos</string>
+    <string name="origin_other">Outros</string>
+
+    <!-- Subtítulo da lista: "Download · ontem" -->
+    <string name="list_subtitle">%1$s · %2$s</string>
+
+    <!-- Datas -->
+    <string name="date_today">hoje</string>
+    <string name="date_yesterday">ontem</string>
+    <string name="date_pattern_same_year">d \'de\' MMM</string>
+    <string name="date_pattern_other_year">d \'de\' MMM \'de\' yyyy</string>
+
+    <!-- Remover dos recentes -->
+    <string name="remove_from_list_title">Remover da lista?</string>
+    <string name="remove_from_list_body">O arquivo continua no celular.</string>
+
+    <!-- PDFs protegidos por senha -->
+    <string name="protected_pdf">PDF protegido</string>
+    <string name="password">Senha</string>
+    <string name="hide_password">Ocultar senha</string>
+    <string name="show_password">Mostrar senha</string>
+    <string name="wrong_password">Senha incorreta, tente de novo</string>
+    <string name="use_letters">Usar letras</string>
+    <string name="use_numbers">Usar números</string>
+
+    <!-- Atualizações -->
+    <string name="update_available">Atualização disponível</string>
+    <string name="update_versions">Versão atual: %1$s\nNova versão: %2$s</string>
+    <string name="update_check_title">Verificação de atualizações</string>
+    <string name="update_checking">Verificando...</string>
+    <string name="update_check_now">Verificar agora</string>
+    <string name="update_up_to_date">✓ Você está na versão mais recente</string>
+    <string name="update_found">🎉 Há uma nova versão disponível!</string>
+    <string name="update_timeout">⏱️ Timeout ao verificar</string>
+    <string name="update_auto_check">Verificação automática</string>
+
+    <!-- Erros -->
+    <string name="error_corrupted">Não foi possível abrir este arquivo.</string>
+    <string name="error_gone">Este arquivo não está mais disponível.</string>
+    <string name="error_no_space">Sem espaço no celular para abrir este arquivo.</string>
+    <string name="error_page_render">Não foi possível mostrar esta página.</string>
+
+    <!-- Leitor -->
+    <string name="opening">Abrindo…</string>
+    <string name="rotation_locked_message">Tela travada nesta posição</string>
+    <string name="rotation_auto_message">Rotação automática</string>
+    <string name="unlock_rotation">Destravar rotação</string>
+    <string name="lock_rotation">Travar rotação</string>
+    <string name="rotation_locked">Travada</string>
+    <string name="rotation_automatic">Automática</string>
+    <string name="lock_screen_rotation">Travar rotação da tela</string>
+    <string name="previous_page">Página anterior</string>
+    <string name="next_page">Próxima página</string>
+    <string name="page_number">Página %1$d</string>
+    <string name="page_of_total">Página %1$d de %2$d</string>
+
+</resources>
