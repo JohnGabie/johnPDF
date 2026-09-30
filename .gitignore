@@ -9,5 +9,9 @@ captures/
 .cxx/
 *.keystore
 *.jks
+.superpowers/
 keystore.properties
 .venv-tools/
+__pycache__/
+.kotlin/
+.playwright-mcp/

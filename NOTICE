@@ -1,0 +1,16 @@
+johnPDF
+Copyright 2026 Joao Gabriel
+Licensed under the GNU Affero General Public License v3.0 (see LICENSE).
+
+---
+
+Este produto inclui ícones derivados de Material Symbols,
+de https://github.com/google/material-design-icons
+
+Copyright 2023 Google LLC
+Licensed under the Apache License, Version 2.0.
+Uma cópia da licença está em third_party/material-design-icons/LICENSE.
+
+Arquivos afetados:
+  app/src/main/java/com/johngabie/johnpdf/ui/icons/JohnIcons.kt
+  tools/icons/svg/*.svg

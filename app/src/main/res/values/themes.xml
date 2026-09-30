@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base para API 24–28, que não tem DayNight no DeviceDefault. -->
+    <style name="Theme.JohnPdf" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <!-- Sem isto, o arranque a frio em modo escuro pisca branco. -->
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

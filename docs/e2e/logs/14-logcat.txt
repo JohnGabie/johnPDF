@@ -1,0 +1,39 @@
+09-29 04:12:22.695  4589  4589 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:12:22.698  4589  4589 I AndroidRuntime: Using default boot image
+09-29 04:12:22.698  4589  4589 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:12:22.780  4589  4589 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:12:23.807  4589  4589 D AndroidRuntime: Shutting down VM
+09-29 04:12:39.566  4670  4670 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:12:39.571  4670  4670 I AndroidRuntime: Using default boot image
+09-29 04:12:39.571  4670  4670 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:12:39.692  4670  4670 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:12:40.729  4670  4670 D AndroidRuntime: Shutting down VM
+09-29 04:12:54.168  4736  4736 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:12:54.171  4736  4736 I AndroidRuntime: Using default boot image
+09-29 04:12:54.171  4736  4736 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:12:54.253  4736  4736 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:12:55.282  4736  4736 D AndroidRuntime: Shutting down VM
+09-29 04:13:11.287  4827  4827 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:13:11.290  4827  4827 I AndroidRuntime: Using default boot image
+09-29 04:13:11.290  4827  4827 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:13:11.382  4827  4827 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:13:12.410  4827  4827 D AndroidRuntime: Shutting down VM
+09-29 04:13:18.927  4384  4390 I hngabie.johnpdf: NativeAlloc concurrent mark compact GC freed 1196KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 5800KB/11MB, paused 127us,6.732ms total 34.046ms
+09-29 04:13:28.749  3097  3097 D ActivityThread: Package [com.johngabie.johnpdf] reported as REPLACED, but missing application info. Assuming REMOVED.
+09-29 04:13:32.639  4944  4944 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:13:32.641  4944  4944 I AndroidRuntime: Using default boot image
+09-29 04:13:32.642  4944  4944 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:13:32.726  4944  4944 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:13:33.750  4944  4944 D AndroidRuntime: Shutting down VM
+09-29 04:13:50.630  5036  5036 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:13:50.633  5036  5036 I AndroidRuntime: Using default boot image
+09-29 04:13:50.633  5036  5036 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:13:50.721  5036  5036 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:13:51.750  5036  5036 D AndroidRuntime: Shutting down VM
+09-29 04:13:58.501  4384  4390 I hngabie.johnpdf: NativeAlloc concurrent mark compact GC freed 1124KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 5776KB/11MB, paused 111us,9.450ms total 39.339ms
+09-29 04:14:00.701  4384  4390 I hngabie.johnpdf: NativeAlloc concurrent mark compact GC freed 692KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 5756KB/11MB, paused 348us,7.817ms total 41.333ms
+09-29 04:14:08.183  5129  5129 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+09-29 04:14:08.186  5129  5129 I AndroidRuntime: Using default boot image
+09-29 04:14:08.186  5129  5129 I AndroidRuntime: Leaving lock profiling enabled
+09-29 04:14:08.271  5129  5129 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+09-29 04:14:09.298  5129  5129 D AndroidRuntime: Shutting down VM

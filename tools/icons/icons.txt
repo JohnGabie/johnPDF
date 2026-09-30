@@ -1,0 +1,33 @@
+# Ícones vendorizados de Material Symbols Rounded (weight 400, grade 0, optical size 24).
+# Formato: <nome_upstream> <NomeKotlin> [fill] [automirror]
+#   fill       → baixa a variante *_fill1_24px.svg
+#   automirror → ImageVector com autoMirror = true (espelha em RTL)
+# Ver docs/superpowers/specs/2026-09-29-icones-vendorizados-spec.md §2
+
+arrow_back            ArrowBack            automirror
+brightness_auto       BrightnessAuto
+close                 Close
+dark_mode             DarkMode
+delete                Delete
+dialpad               Dialpad
+error                 Error
+folder                Folder
+folder_open           FolderOpen
+keyboard              Keyboard
+keyboard_arrow_down   KeyboardArrowDown
+keyboard_arrow_up     KeyboardArrowUp
+library_books         LibraryBooks
+library_books         LibraryBooksFilled   fill
+light_mode            LightMode
+lock                  Lock
+picture_as_pdf        PictureAsPdf
+# `history` não entra: upstream publica history_fill1_24px.svg idêntico ao
+# contorno, o que deixaria o estado selecionado da bottom nav indistinguível.
+schedule              Schedule
+schedule              ScheduleFilled       fill
+screen_lock_rotation  ScreenLockRotation
+screen_rotation       ScreenRotation
+search                Search
+search_off            SearchOff
+visibility            Visibility
+visibility_off        VisibilityOff
