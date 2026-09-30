@@ -8,10 +8,12 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URL
 
 interface UpdateCheck {
@@ -60,7 +62,16 @@ class UpdateRepository(
         if (!shouldCheck) return
 
         try {
-            val release = fetchLatestRelease()
+            val result = withTimeoutOrNull(10_000L) {
+                fetchLatestRelease()
+            }
+
+            if (result == null) {
+                // Timeout occurred
+                return
+            }
+
+            val release = result
             val versionCode = parseVersionCode(release.tagName)
             val remote = RemoteVersion(
                 versionCode = versionCode,
@@ -72,23 +83,33 @@ class UpdateRepository(
                 it[LAST_CHECK_TIME] = now
             }
         } catch (e: Exception) {
-            // Silently fail; network error or parse error
+            // Silently fail; network error, timeout, or parse error
+            // Update check time anyway to avoid repeated checks on failure
+            dataStore.edit { it[LAST_CHECK_TIME] = now }
         }
     }
 
     private suspend fun fetchLatestRelease(): GitHubRelease {
         val url = URL("https://api.github.com/repos/$repoOwner/$repoName/releases/latest")
         val connection = (url.openConnection() as HttpURLConnection)
-        connection.connectTimeout = 10_000
-        connection.readTimeout = 10_000
+        connection.connectTimeout = 5_000
+        connection.readTimeout = 5_000
         connection.requestMethod = "GET"
 
         try {
-            if (connection.responseCode != 200) throw Exception("HTTP ${connection.responseCode}")
-            val json = connection.inputStream.bufferedReader().readText()
+            val responseCode = connection.responseCode
+            if (responseCode != 200) throw Exception("HTTP $responseCode")
+
+            val json = connection.inputStream.bufferedReader().use { it.readText() }
             return Json.decodeFromString<GitHubRelease>(json)
+        } catch (e: SocketTimeoutException) {
+            throw Exception("Timeout ao verificar atualizações", e)
         } finally {
-            connection.disconnect()
+            try {
+                connection.disconnect()
+            } catch (e: Exception) {
+                // Ignore disconnect errors
+            }
         }
     }
 

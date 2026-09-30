@@ -175,6 +175,17 @@ fun UpdateSettingsDialog(
         }
     }
 
+    LaunchedEffect(isChecking) {
+        if (isChecking) {
+            kotlinx.coroutines.delay(10_000)
+            if (isChecking) {
+                isChecking = false
+                feedback = "⏱️ Timeout ao verificar"
+                feedbackTimer = true
+            }
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = JohnTheme.dialogColor,
