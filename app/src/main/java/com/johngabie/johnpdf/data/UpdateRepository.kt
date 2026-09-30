@@ -62,7 +62,7 @@ class UpdateRepository(
         if (!shouldCheck) return
 
         try {
-            val result = withTimeoutOrNull(10_000L) {
+            val result = withTimeoutOrNull(15_000L) {
                 fetchLatestRelease()
             }
 
@@ -92,8 +92,8 @@ class UpdateRepository(
     private suspend fun fetchLatestRelease(): GitHubRelease {
         val url = URL("https://api.github.com/repos/$repoOwner/$repoName/releases/latest")
         val connection = (url.openConnection() as HttpURLConnection)
-        connection.connectTimeout = 5_000
-        connection.readTimeout = 5_000
+        connection.connectTimeout = 8_000
+        connection.readTimeout = 8_000
         connection.requestMethod = "GET"
 
         try {

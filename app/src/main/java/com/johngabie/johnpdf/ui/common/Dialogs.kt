@@ -168,7 +168,7 @@ fun UpdateSettingsDialog(
 
     LaunchedEffect(isChecking) {
         if (isChecking) {
-            kotlinx.coroutines.delay(10_000)
+            kotlinx.coroutines.delay(15_000)
             if (isChecking) {
                 isChecking = false
                 feedback = "⏱️ Timeout ao verificar"
