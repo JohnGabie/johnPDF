@@ -2,9 +2,11 @@ package com.johngabie.johnpdf.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -12,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -145,5 +148,36 @@ fun UpdateAvailableDialog(current: RemoteVersion, onDismiss: () -> Unit, onOpenL
         },
         confirmButton = { PrimaryButton("Download", onClick = { onOpenLink(current.downloadUrl) }) },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Depois", style = MaterialTheme.typography.labelLarge) } },
+    )
+}
+
+@Composable
+fun UpdateSettingsDialog(
+    autoCheckUpdates: Boolean,
+    onToggleAutoCheck: (Boolean) -> Unit,
+    onCheckNow: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = JohnTheme.dialogColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        icon = { Icon(JohnIcons.Schedule, contentDescription = null) },
+        title = { Text("Verificação de atualizações", style = MaterialTheme.typography.titleLarge) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(SpaceM)) {
+                PrimaryButton("Verificar agora", onClick = { onCheckNow(); onDismiss() })
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("Verificação automática", style = MaterialTheme.typography.bodyLarge)
+                    Switch(checked = autoCheckUpdates, onCheckedChange = onToggleAutoCheck)
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Fechar", style = MaterialTheme.typography.labelLarge) } },
     )
 }

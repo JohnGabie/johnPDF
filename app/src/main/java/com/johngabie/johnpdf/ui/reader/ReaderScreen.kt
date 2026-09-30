@@ -8,10 +8,16 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.AnimationState
+import androidx.compose.animation.core.DecayAnimationSpec
+import androidx.compose.animation.core.animateDecay
+import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -76,6 +82,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
@@ -101,7 +108,9 @@ import com.johngabie.johnpdf.ui.theme.PrimaryTouchTarget
 import com.johngabie.johnpdf.ui.theme.SpaceL
 import com.johngabie.johnpdf.ui.theme.SpaceS
 import com.johngabie.johnpdf.ui.theme.readableIconButtonColors
+import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -324,6 +333,9 @@ private fun PageList(
     val pinchOrigin = remember { mutableStateOf(TransformOrigin.Center) }
     val pinchCentroid = remember { mutableStateOf(Offset.Zero) }
     val hScroll = rememberScrollState()
+    val panScope = rememberCoroutineScope()
+    // Ampliado, o pan 2D abaixo assume os dois eixos; em 1x a LazyColumn rola sozinha.
+    val panning = zoom > ReaderViewModel.MIN_ZOOM
     // Âncora pendente: o preview amplia em volta dos dedos, mas o zoom confirmado refaz o
     // layout com os offsets de rolagem antigos. Sem reposicionar as duas rolagens, a página
     // salta para um lugar arbitrário ao soltar a pinça.
@@ -375,6 +387,36 @@ private fun PageList(
                         },
                     )
                 }
+                // Pan 2D. `horizontalScroll` por fora e `LazyColumn` por dentro são dois
+                // scrollables de orientações diferentes, e o Compose trava o gesto num eixo só —
+                // ampliado, isso impede arrastar na diagonal. Aqui assumimos o arrasto e
+                // dirigimos os dois eixos juntos, com inércia em ambos.
+                .pointerInput(panning) {
+                    if (!panning) return@pointerInput
+                    val decay = splineBasedDecay<Float>(this)
+                    val tracker = VelocityTracker()
+                    var flings: List<Job> = emptyList()
+                    detectDragGestures(
+                        onDragStart = {
+                            flings.forEach { it.cancel() }
+                            tracker.resetTracking()
+                        },
+                        onDragCancel = { tracker.resetTracking() },
+                        onDragEnd = {
+                            val v = tracker.calculateVelocity()
+                            flings = listOf(
+                                panScope.launch { hScroll.flingBy(-v.x, decay) },
+                                panScope.launch { listState.flingBy(-v.y, decay) },
+                            )
+                        },
+                        onDrag = { change, drag ->
+                            change.consume()
+                            tracker.addPosition(change.uptimeMillis, change.position)
+                            hScroll.dispatchRawDelta(-drag.x)
+                            listState.dispatchRawDelta(-drag.y)
+                        },
+                    )
+                }
                 .pointerInput(Unit) { detectTapGestures(onTap = { currentSingleTap() }, onDoubleTap = { currentDoubleTap() }) }
                 // Lido DENTRO do bloco de propósito: assim a escala invalida a camada
                 // diretamente, sem depender de recomposição — é o que faz o preview
@@ -385,10 +427,13 @@ private fun PageList(
                     scaleY = preview
                     transformOrigin = pinchOrigin.value
                 }
-                .horizontalScroll(hScroll, enabled = zoom > 1f),
+                // Gestos desligados nos dois: quem arrasta é o pan 2D acima, senão o scrollable
+                // interno ganha o gesto na passagem Main e trava o eixo de novo.
+                .horizontalScroll(hScroll, enabled = false),
         ) {
             LazyColumn(
                 state = listState,
+                userScrollEnabled = !panning,
                 modifier = Modifier.width(contentWidth).fillMaxHeight(),
                 verticalArrangement = Arrangement.spacedBy(PageGap),
                 contentPadding = PaddingValues(vertical = PageGap),
@@ -435,6 +480,17 @@ private fun PageList(
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             )
         }
+    }
+}
+
+/** Inércia de um eixo depois do arrasto; para ao bater na borda. */
+private suspend fun ScrollableState.flingBy(velocity: Float, decay: DecayAnimationSpec<Float>) {
+    if (abs(velocity) < 1f) return
+    var last = 0f
+    AnimationState(initialValue = 0f, initialVelocity = velocity).animateDecay(decay) {
+        val delta = value - last
+        last = value
+        if (abs(delta - dispatchRawDelta(delta)) > 0.5f) cancelAnimation()
     }
 }
 

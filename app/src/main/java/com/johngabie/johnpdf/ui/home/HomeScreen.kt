@@ -61,7 +61,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -86,6 +88,7 @@ import com.johngabie.johnpdf.ui.common.PrimaryButton
 import com.johngabie.johnpdf.ui.common.RemoveDialog
 import com.johngabie.johnpdf.ui.common.SecondaryButton
 import com.johngabie.johnpdf.ui.common.UpdateAvailableDialog
+import com.johngabie.johnpdf.ui.common.UpdateSettingsDialog
 import com.johngabie.johnpdf.ui.icons.JohnIcons
 import com.johngabie.johnpdf.ui.theme.JohnTheme
 import com.johngabie.johnpdf.ui.theme.ListItemMinHeight
@@ -110,8 +113,11 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
 fun HomeScreen(viewModel: HomeViewModel, container: AppContainer) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val remoteVersion by container.updates.remoteVersion.collectAsStateWithLifecycle(initialValue = null)
+    val autoCheckUpdates by container.settings.autoCheckUpdates.collectAsStateWithLifecycle(initialValue = false)
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var dismissedVersion by remember { mutableStateOf<Int?>(null) }
+    var showUpdateSettings by remember { mutableStateOf(false) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let(viewModel::openUri)
     }
@@ -131,8 +137,10 @@ fun HomeScreen(viewModel: HomeViewModel, container: AppContainer) {
         }
         viewModel.refresh()
     }
-    LaunchedEffect(Unit) {
-        container.updates.checkForUpdate()
+    LaunchedEffect(autoCheckUpdates) {
+        if (autoCheckUpdates) {
+            container.updates.checkForUpdate()
+        }
     }
     LifecycleResumeEffect(Unit) {
         viewModel.refresh()
@@ -150,6 +158,20 @@ fun HomeScreen(viewModel: HomeViewModel, container: AppContainer) {
                     // Silently fail if browser not available
                 }
             },
+        )
+    }
+
+    if (showUpdateSettings) {
+        UpdateSettingsDialog(
+            autoCheckUpdates = autoCheckUpdates,
+            onToggleAutoCheck = { enabled ->
+                scope.launch { container.settings.setAutoCheckUpdates(enabled) }
+            },
+            onCheckNow = {
+                dismissedVersion = null
+                scope.launch { container.updates.checkForUpdate() }
+            },
+            onDismiss = { showUpdateSettings = false },
         )
     }
 
@@ -171,6 +193,7 @@ fun HomeScreen(viewModel: HomeViewModel, container: AppContainer) {
             }
         },
         onDismissError = viewModel::dismissError,
+        onOpenUpdateSettings = { showUpdateSettings = true },
     )
 }
 
@@ -185,12 +208,13 @@ fun HomeContent(
     onOpenPdf: (PdfFile) -> Unit,
     onRequestPermission: () -> Unit,
     onDismissError: () -> Unit,
+    onOpenUpdateSettings: () -> Unit = {},
     nowMillis: Long = System.currentTimeMillis(),
 ) {
     var pendingRemoval by remember { mutableStateOf<RecentItem?>(null) }
 
     Scaffold(
-        topBar = { HomeTopBar(onOpenPicker) },
+        topBar = { HomeTopBar(onOpenPicker, onOpenUpdateSettings) },
         bottomBar = { HomeBottomBar(state.tab, onSelectTab) },
     ) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {
@@ -225,7 +249,7 @@ fun HomeContent(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopBar(onOpenPicker: () -> Unit) {
+private fun HomeTopBar(onOpenPicker: () -> Unit, onOpenUpdateSettings: () -> Unit = {}) {
     TopAppBar(
         title = {
             Text(
@@ -237,6 +261,9 @@ private fun HomeTopBar(onOpenPicker: () -> Unit) {
         },
         actions = {
             ThemeSwitchAction()
+            IconButton(onClick = onOpenUpdateSettings, modifier = Modifier.testTag("update_settings")) {
+                Icon(JohnIcons.Schedule, contentDescription = "Configurações de atualização", modifier = Modifier.size(24.dp))
+            }
             SecondaryButton(
                 text = "Abrir PDF",
                 onClick = onOpenPicker,

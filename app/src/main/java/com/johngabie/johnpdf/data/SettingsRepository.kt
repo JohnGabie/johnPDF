@@ -12,14 +12,25 @@ interface RotationLockSetting {
     suspend fun setRotationLocked(locked: Boolean)
 }
 
-class SettingsRepository(private val dataStore: DataStore<Preferences>) : RotationLockSetting {
+interface UpdateCheckSetting {
+    val autoCheckUpdates: Flow<Boolean>
+    suspend fun setAutoCheckUpdates(enabled: Boolean)
+}
+
+class SettingsRepository(private val dataStore: DataStore<Preferences>) : RotationLockSetting, UpdateCheckSetting {
     override val rotationLocked: Flow<Boolean> = dataStore.data.map { it[ROTATION_LOCKED] ?: false }
+    override val autoCheckUpdates: Flow<Boolean> = dataStore.data.map { it[AUTO_CHECK_UPDATES] ?: false }
 
     override suspend fun setRotationLocked(locked: Boolean) {
         dataStore.edit { it[ROTATION_LOCKED] = locked }
     }
 
+    override suspend fun setAutoCheckUpdates(enabled: Boolean) {
+        dataStore.edit { it[AUTO_CHECK_UPDATES] = enabled }
+    }
+
     private companion object {
         val ROTATION_LOCKED = booleanPreferencesKey("rotation_locked")
+        val AUTO_CHECK_UPDATES = booleanPreferencesKey("auto_check_updates")
     }
 }
