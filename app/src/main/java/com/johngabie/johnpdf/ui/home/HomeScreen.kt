@@ -167,9 +167,13 @@ fun HomeScreen(viewModel: HomeViewModel, container: AppContainer) {
             onToggleAutoCheck = { enabled ->
                 scope.launch { container.settings.setAutoCheckUpdates(enabled) }
             },
-            onCheckNow = {
+            onCheckNow = { onResult ->
                 dismissedVersion = null
-                scope.launch { container.updates.checkForUpdate() }
+                scope.launch {
+                    container.updates.checkForUpdate()
+                    val hasUpdate = remoteVersion != null && remoteVersion!!.versionCode > 1
+                    onResult(hasUpdate)
+                }
             },
             onDismiss = { showUpdateSettings = false },
         )

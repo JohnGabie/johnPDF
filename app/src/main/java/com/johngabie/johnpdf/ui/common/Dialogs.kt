@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -14,12 +16,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -155,9 +160,21 @@ fun UpdateAvailableDialog(current: RemoteVersion, onDismiss: () -> Unit, onOpenL
 fun UpdateSettingsDialog(
     autoCheckUpdates: Boolean,
     onToggleAutoCheck: (Boolean) -> Unit,
-    onCheckNow: () -> Unit,
+    onCheckNow: (onResult: (hasUpdate: Boolean) -> Unit) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    var isChecking by remember { mutableStateOf(false) }
+    var feedback by remember { mutableStateOf<String?>(null) }
+    var feedbackTimer by remember { mutableStateOf(false) }
+
+    LaunchedEffect(feedbackTimer) {
+        if (feedbackTimer) {
+            kotlinx.coroutines.delay(3000)
+            feedback = null
+            feedbackTimer = false
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = JohnTheme.dialogColor,
@@ -167,7 +184,32 @@ fun UpdateSettingsDialog(
         title = { Text("Verificação de atualizações", style = MaterialTheme.typography.titleLarge) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(SpaceM)) {
-                PrimaryButton("Verificar agora", onClick = { onCheckNow(); onDismiss() })
+                if (isChecking) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(SpaceM))
+                        Text("Verificando...", style = MaterialTheme.typography.bodyMedium)
+                    }
+                } else if (feedback != null) {
+                    Text(feedback!!, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+                } else {
+                    PrimaryButton("Verificar agora", onClick = {
+                        isChecking = true
+                        onCheckNow { hasUpdate ->
+                            isChecking = false
+                            feedback = if (hasUpdate) {
+                                "🎉 Há uma nova versão disponível!"
+                            } else {
+                                "✓ Você está na versão mais recente"
+                            }
+                            feedbackTimer = true
+                        }
+                    })
+                }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
