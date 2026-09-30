@@ -8,6 +8,7 @@ import com.johngabie.johnpdf.data.PdfLibraryRepository
 import com.johngabie.johnpdf.data.RecentsRepository
 import com.johngabie.johnpdf.data.SettingsRepository
 import com.johngabie.johnpdf.data.StorageAccess
+import com.johngabie.johnpdf.data.UpdateRepository
 import java.io.File
 
 private val Context.settingsDataStore by preferencesDataStore(name = "settings")
@@ -18,6 +19,7 @@ class AppContainer(context: Context) {
     val importer = ImportRepository(app.contentResolver, File(app.filesDir, "imports"))
     val library = PdfLibraryRepository(app.contentResolver)
     val settings = SettingsRepository(app.settingsDataStore)
+    val updates = UpdateRepository(app.settingsDataStore)
     val openPdf = OpenPdfUseCase(importer, recents)
     fun hasFilesAccess(): Boolean = StorageAccess.hasAllFilesAccess(app)
 }

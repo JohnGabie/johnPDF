@@ -57,6 +57,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,6 +77,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.johngabie.johnpdf.AppContainer
 import com.johngabie.johnpdf.data.PdfFile
 import com.johngabie.johnpdf.data.RecentItem
 import com.johngabie.johnpdf.data.StorageAccess
@@ -83,6 +85,7 @@ import com.johngabie.johnpdf.ui.common.ErrorDialog
 import com.johngabie.johnpdf.ui.common.PrimaryButton
 import com.johngabie.johnpdf.ui.common.RemoveDialog
 import com.johngabie.johnpdf.ui.common.SecondaryButton
+import com.johngabie.johnpdf.ui.common.UpdateAvailableDialog
 import com.johngabie.johnpdf.ui.icons.JohnIcons
 import com.johngabie.johnpdf.ui.theme.JohnTheme
 import com.johngabie.johnpdf.ui.theme.ListItemMinHeight
@@ -104,9 +107,11 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
 }
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel) {
+fun HomeScreen(viewModel: HomeViewModel, container: AppContainer) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val remoteVersion by container.updates.remoteVersion.collectAsStateWithLifecycle(initialValue = null)
     val context = LocalContext.current
+    var dismissedVersion by remember { mutableStateOf<Int?>(null) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let(viewModel::openUri)
     }
@@ -126,10 +131,28 @@ fun HomeScreen(viewModel: HomeViewModel) {
         }
         viewModel.refresh()
     }
+    LaunchedEffect(Unit) {
+        container.updates.checkForUpdate()
+    }
     LifecycleResumeEffect(Unit) {
         viewModel.refresh()
         onPauseOrDispose { }
     }
+
+    if (remoteVersion != null && remoteVersion!!.versionCode > 1 && dismissedVersion != remoteVersion!!.versionCode) {
+        UpdateAvailableDialog(
+            current = remoteVersion!!,
+            onDismiss = { dismissedVersion = remoteVersion!!.versionCode },
+            onOpenLink = { url ->
+                try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                } catch (e: ActivityNotFoundException) {
+                    // Silently fail if browser not available
+                }
+            },
+        )
+    }
+
     HomeContent(
         state = state,
         onOpenPicker = { picker.launch(arrayOf("application/pdf")) },

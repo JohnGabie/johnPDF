@@ -28,7 +28,7 @@ fun AppNavHost(homeViewModel: HomeViewModel, container: AppContainer) {
         }
     }
     NavHost(nav, startDestination = HomeRoute) {
-        composable<HomeRoute> { HomeScreen(homeViewModel) }
+        composable<HomeRoute> { HomeScreen(homeViewModel, container) }
         composable<ReaderRoute> { entry ->
             val route = entry.toRoute<ReaderRoute>()
             val vm: ReaderViewModel = viewModel(

@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.johngabie.johnpdf.data.AppError
+import com.johngabie.johnpdf.data.RemoteVersion
 import com.johngabie.johnpdf.ui.icons.JohnIcons
 import com.johngabie.johnpdf.ui.theme.JohnTheme
 import com.johngabie.johnpdf.ui.theme.SpaceM
@@ -124,5 +125,25 @@ fun PasswordDialog(wrongAttempt: Boolean, onSubmit: (String) -> Unit, onCancel: 
         },
         confirmButton = { PrimaryButton("Abrir", onClick = { onSubmit(password) }, enabled = password.isNotEmpty()) },
         dismissButton = { TextButton(onClick = onCancel) { Text("Cancelar", style = MaterialTheme.typography.labelLarge) } },
+    )
+}
+
+@Composable
+fun UpdateAvailableDialog(current: RemoteVersion, onDismiss: () -> Unit, onOpenLink: (String) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = JohnTheme.dialogColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurface,
+        icon = { Icon(JohnIcons.ScreenRotation, contentDescription = null) },
+        title = { Text("Atualização disponível", style = MaterialTheme.typography.titleLarge) },
+        text = {
+            Text(
+                "Versão atual: 1.0\nNova versão: ${current.versionName}",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        },
+        confirmButton = { PrimaryButton("Download", onClick = { onOpenLink(current.downloadUrl) }) },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Depois", style = MaterialTheme.typography.labelLarge) } },
     )
 }
