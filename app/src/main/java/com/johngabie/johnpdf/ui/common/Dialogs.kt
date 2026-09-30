@@ -165,15 +165,6 @@ fun UpdateSettingsDialog(
 ) {
     var isChecking by remember { mutableStateOf(false) }
     var feedback by remember { mutableStateOf<String?>(null) }
-    var feedbackTimer by remember { mutableStateOf(false) }
-
-    LaunchedEffect(feedbackTimer) {
-        if (feedbackTimer) {
-            kotlinx.coroutines.delay(3000)
-            feedback = null
-            feedbackTimer = false
-        }
-    }
 
     LaunchedEffect(isChecking) {
         if (isChecking) {
@@ -181,7 +172,6 @@ fun UpdateSettingsDialog(
             if (isChecking) {
                 isChecking = false
                 feedback = "⏱️ Timeout ao verificar"
-                feedbackTimer = true
             }
         }
     }
@@ -217,7 +207,6 @@ fun UpdateSettingsDialog(
                             } else {
                                 "✓ Você está na versão mais recente"
                             }
-                            feedbackTimer = true
                         }
                     })
                 }
